@@ -1,3 +1,4 @@
+import java.util.Arrays;
 
 public class Board {
 
@@ -16,9 +17,37 @@ public class Board {
 	 */
 	public Board() {
 		// init board
+		for(int i = 0; i < 2; i++) {
+			for(int j = 0; j < 6; j++) {
+				board[i][j] = 4;
+			}
+		}
 
+		//initiate score
+		score[0] = 0;
+		score[1] = 0;
+
+		//player turn is set to player 1 by default
+		playerturn = 0;
+
+		//player initiation
 		players[0] = new Player();
 		players[1] = new Player();
+
+		//begin the first turn
+		//This is incorrect, we need to check if there is a possible move!
+		while(score[0] + score[1] != 48) {
+			//keep getting next turns, which call move for the player
+			NextTurn();
+
+			//display the current Kalah state
+			//use print temporarily for now
+			printBoard();
+			getPlayerScores();
+		}
+
+		//display who won, etc.
+
 	}
 
 	/*
@@ -26,7 +55,7 @@ public class Board {
 	 */
 	public void printBoard() {
 		for(int i = 0; i < 2; i++) {
-			for(int j = 0; j < 8; j++) {
+			for(int j = 0; j < 6; j++) {
 				System.out.print(board[i][j] + " ");
 			}
 			System.out.println();
@@ -34,8 +63,8 @@ public class Board {
 	}
 
 	public void getPlayerScores() {
-		System.out.print("User: " + players[0].getScore() + "\n");
-		System.out.print("AI: " + players[1].getScore());
+		System.out.print("User: " + score[0] + "\n");
+		System.out.print("AI: " + score[1] + "\n");
 	}
 
 	/*
@@ -50,6 +79,7 @@ public class Board {
 	 * tries to move that house. Return false if unsuccessful,
 	 * true otherwise
 	 */
+
 	public boolean Move(int row, int index) {
 		//Setup temporary variables
 		int numMoves = board[row][index];
@@ -116,7 +146,47 @@ public class Board {
 	 * GetMoves returns an array of possible moves on the mancala board
 	 * 0 means not possible move, 1 means possible move
 	 */
-	public int[][] GetMoves() {
-		return new int[2][6];
+	public int[][] GetMoves(int plr) {
+		//player 1 has control over left half
+		//player 2 has control over right half
+		int [][] moves = new int[2][6];
+		int oplr = plr == 1 ? 0 : 1;
+		for(int i = 0; i < 6; i++){
+			moves[plr][i] = 1;
+			moves[oplr][i] = 0;
+
+			//make sure there are pebbles in that house
+			if(board[plr][i] == 0) {
+				moves[plr][i] = 0;
+			}
+		}
+		return moves;
+	}
+
+	/*
+	 * NextTurn function queries player to return with input for the player
+	 */
+	private void NextTurn() {
+		//query the current player for the next turn
+		int plr = playerturn;
+		int []move;
+		do {
+			/*
+			 * put error checking for move here:
+			 * continuously ask for moves if plr inputs incorrect move
+			 */
+			move = players[plr].getMove();
+
+
+		} while( Move(move[0], move[1]) );
+
+		playerturn = playerturn == 1 ? 0 : 1;
+	}
+
+	/*
+	 * Main, runs board
+	 */
+	public static void main(String[] args) {
+		Board board = new Board();
 	}
 }
