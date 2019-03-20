@@ -7,7 +7,7 @@ public class Board {
 	
 	//score datastructure for keep track of scores
 	private int[] score = new int[2];
-	private boolean playerturn;
+	private int playerturn;
 	
 	//player objects, correspond with their score index
 	private Player[] players = new Player[2];
@@ -28,7 +28,7 @@ public class Board {
 		score[1] = 0;
 		
 		//player turn is set to player 1 by default
-		playerturn = true;
+		playerturn = 0;
 		
 		//player initiation
 		players[0] = new Player();
@@ -79,7 +79,66 @@ public class Board {
 	 * tries to move that house. Return false if unsuccessful,
 	 * true otherwise
 	 */
-	public boolean Move(int[] move) {
+
+	public boolean Move(int row, int index) {
+		//Setup temporary variables
+		int numMoves = board[row][index];
+		board[row][index] = 0;
+		int indexTemp = index;
+		int rowTemp = row;
+		
+		for(int i = 0; i < numMoves; i++) {
+			indexTemp++;
+			//Check if at the end of the row
+			if(indexTemp == 6) {
+				//Player 1 scores
+				if(playerturn == 0 && rowTemp == 0) {
+					score[0] += 1;
+					if(i == numMoves - 1) {
+						return true;
+					}
+					rowTemp = 1;
+					indexTemp = -1;
+				}
+				//Player 2 scores
+				else if(playerturn == 1 && rowTemp == 1) {
+					score[1] += 1;
+					if(i == numMoves - 1) {
+						return true;
+					}
+					rowTemp = 0;
+					indexTemp = -1;
+				}
+				//Player 1 moves from side 2 to side 1
+				else if(rowTemp == 0) {
+					rowTemp = 1;
+					indexTemp = -1;
+				}
+				//Player 2 moves from side 1 to side 2
+				else {
+					rowTemp = 0;
+					indexTemp = -1;
+				}
+			}
+			else {
+				board[rowTemp][indexTemp] += 1;
+				//Check if the last piece is deposited in an empty spot on the player's side
+				if(i == numMoves - 1 && board[rowTemp][indexTemp] == 1 && playerturn == rowTemp) {
+					if(rowTemp == 0) {
+						int addToScore = board[1][5 - indexTemp] + board[rowTemp][indexTemp];
+						board[1][5 - indexTemp] = 0;
+						board[rowTemp][indexTemp] = 0;
+						score[0] += addToScore;
+					}
+					if(rowTemp == 1) {
+						int addToScore = board[0][5 - indexTemp] + board[rowTemp][indexTemp];
+						board[0][5 - indexTemp] = 0;
+						board[rowTemp][indexTemp] = 0;
+						score[1] += addToScore;
+					}
+				}
+			}
+		}
 		return false;
 	}
 	
@@ -110,7 +169,7 @@ public class Board {
 	 */
 	private void NextTurn() {
 		//query the current player for the next turn
-		int plr = playerturn ? 1 : 0;;
+		int plr = playerturn;
 		int []move;
 		do {
 			/*
@@ -120,9 +179,9 @@ public class Board {
 			move = players[plr].getMove();
 			
 			
-		} while( Move(move) );
+		} while( Move(move[0], move[1]) );
 		
-		playerturn = !playerturn;
+		playerturn = playerturn == 1 ? 0 : 1;
 	}
 
 	/*
