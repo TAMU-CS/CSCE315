@@ -1,3 +1,4 @@
+import java.util.Scanner;
 
 public class Player {
 	
@@ -14,8 +15,19 @@ public class Player {
 		
 	}
 	
-	public void move() {
+	/*
+	 * GetMove, returns the i, j position of the mancala house 
+	 * the player attempts to move
+	 */
+	public int[] getMove() {
+		Scanner scanObj = new Scanner(System.in);
+		System.out.println("Enter index i, j of house you want to move");
 		
+		int []move = new int[2];
+		move[0] = scanObj.nextInt();
+		move[1] = scanObj.nextInt();
+		
+		return move;
 	}
 	
 	public int getScore() {

@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class Board {
 	
 	//board data structure, 2x6 board to represent houses for seeds
@@ -15,9 +17,33 @@ public class Board {
 	 */
 	public Board() {
 		// init board
+		for(int i = 0; i < 2; i++) {
+			for(int j = 0; j < 6; j++) {
+				board[i][j] = 4;
+			}
+		}
 		
+		//initiate score
+		score[0] = 0;
+		score[1] = 0;
+		
+		//player turn is set to player 1 by default
+		playerturn = 0;
+		
+		//player initiation
 		players[0] = new Player();
 		players[1] = new Player();
+		
+		//begin the first turn
+		while(score[0] + score[1] != 48) {
+			//keep getting next turns, which call move for the player
+			NextTurn();
+			
+			//display the current Kalah state
+			//use print temporarily for now
+			printBoard();
+			getPlayerScores();
+		}
 	}
 	
 	/*
@@ -61,5 +87,12 @@ public class Board {
 		return new int[2][6];
 	}
 	
-	
+	/*
+	 * NextTurn function queries player to return with input for the player
+	 */
+	private void NextTurn() {
+		//query the current player for the next turn
+		
+	}
+		
 }
