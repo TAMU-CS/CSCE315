@@ -10,6 +10,9 @@ public class Board {
 				board[i][j] = 4; // each house starts with 4 seeds
 			}
 		}
+		
+		players[0] = new Player();
+		players[1] = new Player();
 	}
 	
 	public void printBoard() {
@@ -22,7 +25,7 @@ public class Board {
 	}
 	
 	public void getPlayerScores() {
-		System.out.print("User: " + players[0].getScore());
+		System.out.print("User: " + players[0].getScore() + "\n");
 		System.out.print("AI: " + players[1].getScore());
 	}
 }
