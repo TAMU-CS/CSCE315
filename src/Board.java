@@ -51,6 +51,7 @@ public class Board {
 	 * true otherwise
 	 */
 	public boolean Move(int row, int index) {
+		//Setup temporary variables
 		int numMoves = board[row][index];
 		board[row][index] = 0;
 		int indexTemp = index;
@@ -58,17 +59,40 @@ public class Board {
 		
 		for(int i = 0; i < numMoves; i++) {
 			indexTemp++;
+			//Check if at the end of the row
 			if(indexTemp == 6) {
-				if(rowTemp == 0) {
+				//Player 1 scores
+				if(playerturn == 0 && rowTemp == 0) {
+					score[0] += 1;
+					if(i == numMoves - 1) {
+						return true;
+					}
 					rowTemp = 1;
-					indexTemp = 0;
+					indexTemp = -1;
 				}
+				//Player 2 scores
+				else if(playerturn == 1 && rowTemp == 1) {
+					score[1] += 1;
+					if(i == numMoves - 1) {
+						return true;
+					}
+					rowTemp = 0;
+					indexTemp = -1;
+				}
+				//Player 1 moves from side 2 to side 1
+				else if(rowTemp == 0) {
+					rowTemp = 1;
+					indexTemp = -1;
+				}
+				//Player 2 moves from side 1 to side 2
 				else {
 					rowTemp = 0;
-					indexTemp = 0;
+					indexTemp = -1;
 				}
 			}
-			board[rowTemp][indexTemp] += 1;
+			else {
+				board[rowTemp][indexTemp] += 1;
+			}
 		}
 		return false;
 	}
