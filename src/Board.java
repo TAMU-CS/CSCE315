@@ -92,6 +92,21 @@ public class Board {
 			}
 			else {
 				board[rowTemp][indexTemp] += 1;
+				//Check if the last piece is deposited in an empty spot on the player's side
+				if(i == numMoves - 1 && board[rowTemp][indexTemp] == 1 && playerturn == rowTemp) {
+					if(rowTemp == 0) {
+						int addToScore = board[1][5 - indexTemp] + board[rowTemp][indexTemp];
+						board[1][5 - indexTemp] = 0;
+						board[rowTemp][indexTemp] = 0;
+						score[0] += addToScore;
+					}
+					if(rowTemp == 1) {
+						int addToScore = board[0][5 - indexTemp] + board[rowTemp][indexTemp];
+						board[0][5 - indexTemp] = 0;
+						board[rowTemp][indexTemp] = 0;
+						score[1] += addToScore;
+					}
+				}
 			}
 		}
 		return false;
