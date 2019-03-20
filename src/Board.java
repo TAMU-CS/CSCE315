@@ -117,7 +117,6 @@ public class Board {
 		return false;
 	}
 
-
 	/*
 	 * GetMoves returns an array of possible moves on the mancala board
 	 * 0 means not possible move, 1 means possible move
