@@ -35,6 +35,7 @@ public class Board {
 		players[1] = new Player();
 		
 		//begin the first turn
+		//This is incorrect, we need to check if there is a possible move!
 		while(score[0] + score[1] != 48) {
 			//keep getting next turns, which call move for the player
 			NextTurn();
@@ -44,6 +45,9 @@ public class Board {
 			printBoard();
 			getPlayerScores();
 		}
+		
+		//display who won, etc.
+		
 	}
 	
 	/*
