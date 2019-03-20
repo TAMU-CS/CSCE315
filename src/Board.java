@@ -22,7 +22,7 @@ public class Board {
 	}
 	
 	public void getPlayerScores() {
-		System.out.print("Player 1 Score: " + players[0].getScore());
-		System.out.print("Player 2 Score: " + players[1].getScore());
+		System.out.print("User: " + players[0].getScore());
+		System.out.print("AI: " + players[1].getScore());
 	}
 }
