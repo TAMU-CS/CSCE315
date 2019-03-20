@@ -45,6 +45,22 @@ public class Board {
 		
 	}
 	
+	/*
+	 * Move takes the row and index on mancala board, and 
+	 * tries to move that house. Return false if unsuccessful,
+	 * true otherwise
+	 */
+	public boolean Move() {
+		return false;
+	}
+	
+	/*
+	 * GetMoves returns an array of possible moves on the mancala board
+	 * 0 means not possible move, 1 means possible move
+	 */
+	public int[][] GetMoves() {
+		return new int[2][6];
+	}
 	
 	
 }
