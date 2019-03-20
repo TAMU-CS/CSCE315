@@ -1,9 +1,0 @@
-/**
- * 
- */
-/**
- * @author kevin
- *
- */
-module Kalah {
-}
