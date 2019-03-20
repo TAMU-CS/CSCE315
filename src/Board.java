@@ -1,4 +1,3 @@
-//test branch
 public class Board {
 	
 	//board data structure, 2x6 board to represent houses for seeds
