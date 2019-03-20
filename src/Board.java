@@ -50,7 +50,26 @@ public class Board {
 	 * tries to move that house. Return false if unsuccessful,
 	 * true otherwise
 	 */
-	public boolean Move() {
+	public boolean Move(int row, int index) {
+		int numMoves = board[row][index];
+		board[row][index] = 0;
+		int indexTemp = index;
+		int rowTemp = row;
+		
+		for(int i = 0; i < numMoves; i++) {
+			indexTemp++;
+			if(indexTemp == 6) {
+				if(rowTemp == 0) {
+					rowTemp = 1;
+					indexTemp = 0;
+				}
+				else {
+					rowTemp = 0;
+					indexTemp = 0;
+				}
+			}
+			board[rowTemp][indexTemp] += 1;
+		}
 		return false;
 	}
 	
