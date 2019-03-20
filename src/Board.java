@@ -7,7 +7,7 @@ public class Board {
 	
 	//score datastructure for keep track of scores
 	private int[] score = new int[2];
-	private int playerturn;
+	private boolean playerturn;
 	
 	//player objects, correspond with their score index
 	private Player[] players = new Player[2];
@@ -28,7 +28,7 @@ public class Board {
 		score[1] = 0;
 		
 		//player turn is set to player 1 by default
-		playerturn = 0;
+		playerturn = true;
 		
 		//player initiation
 		players[0] = new Player();
@@ -51,7 +51,7 @@ public class Board {
 	 */
 	public void printBoard() {
 		for(int i = 0; i < 2; i++) {
-			for(int j = 0; j < 8; j++) {
+			for(int j = 0; j < 6; j++) {
 				System.out.print(board[i][j] + " ");
 			}
 			System.out.println();
@@ -59,8 +59,8 @@ public class Board {
 	}
 	
 	public void getPlayerScores() {
-		System.out.print("User: " + players[0].getScore() + "\n");
-		System.out.print("AI: " + players[1].getScore());
+		System.out.print("User: " + score[0] + "\n");
+		System.out.print("AI: " + score[1] + "\n");
 	}
 	
 	/*
@@ -75,7 +75,7 @@ public class Board {
 	 * tries to move that house. Return false if unsuccessful,
 	 * true otherwise
 	 */
-	public boolean Move() {
+	public boolean Move(int[] move) {
 		return false;
 	}
 	
@@ -83,8 +83,22 @@ public class Board {
 	 * GetMoves returns an array of possible moves on the mancala board
 	 * 0 means not possible move, 1 means possible move
 	 */
-	public int[][] GetMoves() {
-		return new int[2][6];
+	public int[][] GetMoves(int plr) {
+		//player 1 has control over left half
+		//player 2 has control over right half
+		int [][] moves = new int[2][6];
+		int oplr = plr == 1 ? 0 : 1;
+		for(int i = 0; i < 6; i++){
+			moves[plr][i] = 1;
+			moves[oplr][i] = 0;
+			
+			//make sure there are pebbles in that house
+			if(board[plr][i] == 0) {
+				moves[plr][i] = 0;
+			}
+		}
+		
+		return moves;
 	}
 	
 	/*
@@ -92,7 +106,25 @@ public class Board {
 	 */
 	private void NextTurn() {
 		//query the current player for the next turn
+		int plr = playerturn ? 1 : 0;;
+		int []move;
+		do {
+			/*
+			 * put error checking for move here:
+			 * continuously ask for moves if plr inputs incorrect move
+			 */	
+			move = players[plr].getMove();
+			
+			
+		} while( Move(move) );
 		
+		playerturn = !playerturn;
 	}
-		
+
+	/*
+	 * Main, runs board
+	 */
+	public static void main(String[] args) {
+		Board board = new Board();
+	}
 }
