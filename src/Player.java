@@ -11,11 +11,11 @@ public class Player {
 	}
 	
 	public void pickedUpSeeds(int seeds) {
-		seedsAtPlay = seeds;
+		
 	}
 	
 	public void move() {
-		seedsAtPlay--;
+		
 	}
 	
 	public int getScore() {
