@@ -47,7 +47,13 @@ public class Board {
 		}
 		
 		//display who won, etc.
-		
+		if(score[0] > score[1]) {
+			System.out.println("Player 0 won!");
+		}else if(score[1] > score[0]) {
+			System.out.println("Player 1 won!");
+		}else {
+			System.out.println("TIE!");
+		}
 	}
 	
 	/*
@@ -63,8 +69,8 @@ public class Board {
 	}
 	
 	public void getPlayerScores() {
-		System.out.print("User: " + score[0] + "\n");
-		System.out.print("AI: " + score[1] + "\n");
+		System.out.print("Player 0: " + score[0] + "\n");
+		System.out.print("Player 1: " + score[1] + "\n");
 	}
 	
 	/*
@@ -79,7 +85,6 @@ public class Board {
 	 * tries to move that house. Return false if unsuccessful,
 	 * true otherwise
 	 */
-
 	public boolean Move(int row, int index) {
 		//Setup temporary variables
 		int numMoves = board[row][index];
@@ -183,7 +188,7 @@ public class Board {
 		
 		playerturn = playerturn == 1 ? 0 : 1;
 	}
-
+	
 	/*
 	 * Main, runs board
 	 */
