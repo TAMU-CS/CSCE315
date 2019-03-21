@@ -79,13 +79,6 @@ public class Board {
 	}
 
 	/*
-	 * AddScore takes player index, and increments their score by 1
-	 */
-	public void AddScore(int index) {
-
-	}
-
-	/*
 	 * Move takes the row and index on mancala board, and
 	 * tries to move that house. Return false if unsuccessful,
 	 * true otherwise
