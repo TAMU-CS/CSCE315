@@ -188,9 +188,14 @@ public class Board {
 			 */
 			int[][] possibleMoves = GetMoves(plr);
 
+			System.out.println("\nPossible Moves");
 			for(int i = 0; i < 2; i++) {
 				for(int j = 0; j < 6; j++) {
-					System.out.print(possibleMoves[i][j]);
+					if(i == 0) {
+						System.out.print(possibleMoves[1][5-j]);
+					} else {
+						System.out.print(possibleMoves[0][j]);
+					}
 				}
 				System.out.println();
 			}
@@ -198,8 +203,12 @@ public class Board {
 
 			move = players[plr].getMove();
 
-
-		} while( Move(move[0], move[1]) );
+			// Check if Out Of Bounds
+			while(move < 0 || move > 5) {
+				System.out.println("Index out of bounds. Try again.");
+				move = players[plr].getMove();
+			}
+		} while(Move(move[0], move[1]));
 
 		playerturn = playerturn == 1 ? 0 : 1;
 	}
