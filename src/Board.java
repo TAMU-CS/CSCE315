@@ -62,21 +62,21 @@ public class Board {
 			//Check if at the end of the row
 			if(indexTemp == 6) {
 				//Player 1 scores
-				if(playerturn == 0 && rowTemp == 0) {
+				if(playerturn == 0 && rowTemp == 1) {
 					score[0] += 1;
 					if(i == numMoves - 1) {
 						return true;
 					}
-					rowTemp = 1;
+					rowTemp = 0;
 					indexTemp = -1;
 				}
 				//Player 2 scores
-				else if(playerturn == 1 && rowTemp == 1) {
+				else if(playerturn == 1 && rowTemp == 0) {
 					score[1] += 1;
 					if(i == numMoves - 1) {
 						return true;
 					}
-					rowTemp = 0;
+					rowTemp = 1;
 					indexTemp = -1;
 				}
 				//Player 1 moves from side 2 to side 1
@@ -93,16 +93,16 @@ public class Board {
 			else {
 				board[rowTemp][indexTemp] += 1;
 				//Check if the last piece is deposited in an empty spot on the player's side
-				if(i == numMoves - 1 && board[rowTemp][indexTemp] == 1 && playerturn == rowTemp) {
-					if(rowTemp == 0) {
-						int addToScore = board[1][5 - indexTemp] + board[rowTemp][indexTemp];
-						board[1][5 - indexTemp] = 0;
-						board[rowTemp][indexTemp] = 0;
-						score[0] += addToScore;
-					}
+				if(i == numMoves - 1 && board[rowTemp][indexTemp] == 1 && playerturn != rowTemp) {
 					if(rowTemp == 1) {
 						int addToScore = board[0][5 - indexTemp] + board[rowTemp][indexTemp];
 						board[0][5 - indexTemp] = 0;
+						board[rowTemp][indexTemp] = 0;
+						score[0] += addToScore;
+					}
+					if(rowTemp == 0) {
+						int addToScore = board[1][5 - indexTemp] + board[rowTemp][indexTemp];
+						board[1][5 - indexTemp] = 0;
 						board[rowTemp][indexTemp] = 0;
 						score[1] += addToScore;
 					}
@@ -118,6 +118,16 @@ public class Board {
 	 */
 	public int[][] GetMoves() {
 		return new int[2][6];
+	}
+	
+	public boolean endgame(int[][] availableMoves) {
+		boolean noMoves = true;
+		for(int i = 0; i < 2; i++) {
+			for(int j = 0; j < 6; j++) {
+				//if
+			}
+		}
+		return true;
 	}
 	
 	
