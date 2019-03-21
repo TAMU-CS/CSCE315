@@ -186,6 +186,7 @@ public class Board {
 			System.out.println("Player " + playerturn + " Move:");
 			move = players[plr].getMove();
 
+			move = players[plr].getMove();
 
 		} while( Move(plr, move) );
 
