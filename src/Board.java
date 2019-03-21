@@ -103,6 +103,8 @@ public class Board {
 			if(indexTemp == 6) {
 				//Player 1 scores
 				if(playerturn == 0 && rowTemp == 0) {
+					//Debug
+					//System.out.println("Player 0 Scores");
 					score[0] += 1;
 					if(i == numMoves - 1) {
 						return true;
@@ -112,6 +114,8 @@ public class Board {
 				}
 				//Player 2 scores
 				else if(playerturn == 1 && rowTemp == 1) {
+					//Debug
+					//System.out.println("Player 1 Scores");
 					score[1] += 1;
 					if(i == numMoves - 1) {
 						return true;
