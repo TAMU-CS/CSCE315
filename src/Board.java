@@ -128,7 +128,7 @@ public class Board {
 			else {
 				board[rowTemp][indexTemp] += 1;
 				//Check if the last piece is deposited in an empty spot on the player's side
-				if(i == numMoves - 1 && board[rowTemp][indexTemp] == 1 && playerturn == rowTemp) {
+				if(i == numMoves - 1 && board[rowTemp][indexTemp] == 1 && playerturn != rowTemp) {
 					if(rowTemp == 0) {
 						int addToScore = board[1][5 - indexTemp] + board[rowTemp][indexTemp];
 						board[1][5 - indexTemp] = 0;
@@ -195,4 +195,17 @@ public class Board {
 	public static void main(String[] args) {
 		Board board = new Board();
 	}
+	
+	/*
+	 * 
+	 */
+	public boolean endgame(int[][] availableMoves) {
+		for(int i = 0; i < 6; i++) {
+			if(availableMoves[playerturn][i] != 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 }
