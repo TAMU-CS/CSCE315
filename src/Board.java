@@ -173,7 +173,7 @@ public class Board {
 	private void NextTurn() {
 		//query the current player for the next turn
 		int plr = playerturn;
-		int []move;
+		int move;
 		do {
 			/*
 			 * put error checking for move here:
@@ -183,7 +183,7 @@ public class Board {
 			move = players[plr].getMove();
 
 
-		} while( Move(move[0], move[1]) );
+		} while( Move(plr, move) );
 
 		playerturn = playerturn == 1 ? 0 : 1;
 	}
