@@ -56,7 +56,12 @@ public class Board {
 	public void printBoard() {
 		for(int i = 0; i < 2; i++) {
 			for(int j = 0; j < 6; j++) {
-				System.out.print(board[i][j] + " ");
+				if(i == 0) {
+					System.out.print(board[1][5-j]);
+				}
+				if(i == 1) {
+					System.out.print(board[0][j]);
+				}
 			}
 			System.out.println();
 		}
@@ -160,6 +165,7 @@ public class Board {
 				moves[plr][i] = 0;
 			}
 		}
+
 		return moves;
 	}
 
@@ -174,7 +180,10 @@ public class Board {
 			/*
 			 * put error checking for move here:
 			 * continuously ask for moves if plr inputs incorrect move
-			 */
+			*/
+
+			//int[][] possibleMoves = GetMoves(plr);
+
 			move = players[plr].getMove();
 
 
