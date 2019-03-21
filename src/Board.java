@@ -183,11 +183,34 @@ public class Board {
 			 * put error checking for move here:
 			 * continuously ask for moves if plr inputs incorrect move
 			 */
+
+			printBoard();
+
 			System.out.println("Player " + playerturn + " Move:");
-			move = players[plr].getMove();
 
 			move = players[plr].getMove();
 
+			// Check for Out of Bounds
+			while(move < 0 || move > 5) {
+				System.out.println("Index out of bounds. Try again.");
+				move = players[plr].getMove();
+			}
+
+			// Now figure out possible moves for this player
+			int[][] possibleMoves = GetMoves(plr);
+
+			// Now check if player picked a valid house (house must have stones in it)
+			if(plr == 0) { // this player can only access the 0th row
+				while(possibleMoves[0][move] == 0) { // player picked a house with empty stones
+					System.out.println("Cannot pick empty house! Try again.");
+					move = players[plr].getMove();
+				}
+			} else {
+				while(possibleMoves[1][move] == 0) { // player picked a house with empty stones
+					System.out.println("Cannot pick empty house! Try again.");
+					move = players[plr].getMove();
+				}
+			}
 		} while( Move(plr, move) );
 
 		playerturn = playerturn == 1 ? 0 : 1;
