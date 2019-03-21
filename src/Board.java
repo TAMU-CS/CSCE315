@@ -36,7 +36,7 @@ public class Board {
 
 		//begin the first turn
 		//This is incorrect, we need to check if there is a possible move!
-		while(score[0] + score[1] != 48) {
+		while(!endgame()) {
 			//keep getting next turns, which call move for the player
 			NextTurn();
 
@@ -47,7 +47,13 @@ public class Board {
 		}
 
 		//display who won, etc.
-
+		if(score[0] > score[1]) {
+			System.out.println("Player 0 won!");
+		}else if(score[1] > score[0]) {
+			System.out.println("Player 1 won!");
+		}else {
+			System.out.println("TIE!");
+		}
 	}
 
 	/*
@@ -68,8 +74,8 @@ public class Board {
 	}
 
 	public void getPlayerScores() {
-		System.out.print("User: " + score[0] + "\n");
-		System.out.print("AI: " + score[1] + "\n");
+		System.out.print("Player 0: " + score[0] + "\n");
+		System.out.print("Player 1: " + score[1] + "\n");
 	}
 
 	/*
@@ -84,7 +90,6 @@ public class Board {
 	 * tries to move that house. Return false if unsuccessful,
 	 * true otherwise
 	 */
-
 	public boolean Move(int row, int index) {
 		//Setup temporary variables
 		int numMoves = board[row][index];
@@ -128,7 +133,7 @@ public class Board {
 			else {
 				board[rowTemp][indexTemp] += 1;
 				//Check if the last piece is deposited in an empty spot on the player's side
-				if(i == numMoves - 1 && board[rowTemp][indexTemp] == 1 && playerturn == rowTemp) {
+				if(i == numMoves - 1 && board[rowTemp][indexTemp] == 1 && playerturn != rowTemp) {
 					if(rowTemp == 0) {
 						int addToScore = board[1][5 - indexTemp] + board[rowTemp][indexTemp];
 						board[1][5 - indexTemp] = 0;
@@ -180,10 +185,7 @@ public class Board {
 			/*
 			 * put error checking for move here:
 			 * continuously ask for moves if plr inputs incorrect move
-			*/
-
-			//int[][] possibleMoves = GetMoves(plr);
-
+			 */
 			move = players[plr].getMove();
 
 
@@ -198,4 +200,17 @@ public class Board {
 	public static void main(String[] args) {
 		Board board = new Board();
 	}
+
+	/*
+	 *
+	 */
+	public boolean endgame(int[][] availableMoves) {
+		for(int i = 0; i < 6; i++) {
+			if(availableMoves[playerturn][i] != 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 }
