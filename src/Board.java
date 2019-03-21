@@ -79,13 +79,6 @@ public class Board {
 	}
 
 	/*
-	 * AddScore takes player index, and increments their score by 1
-	 */
-	public void AddScore(int index) {
-
-	}
-
-	/*
 	 * Move takes the row and index on mancala board, and
 	 * tries to move that house. Return false if unsuccessful,
 	 * true otherwise
@@ -103,6 +96,8 @@ public class Board {
 			if(indexTemp == 6) {
 				//Player 1 scores
 				if(playerturn == 0 && rowTemp == 0) {
+					//Debug
+					//System.out.println("Player 0 Scores");
 					score[0] += 1;
 					if(i == numMoves - 1) {
 						return true;
@@ -112,6 +107,8 @@ public class Board {
 				}
 				//Player 2 scores
 				else if(playerturn == 1 && rowTemp == 1) {
+					//Debug
+					//System.out.println("Player 1 Scores");
 					score[1] += 1;
 					if(i == numMoves - 1) {
 						return true;
@@ -180,35 +177,18 @@ public class Board {
 	private void NextTurn() {
 		//query the current player for the next turn
 		int plr = playerturn;
-		int []move;
+		int move;
 		do {
 			/*
 			 * put error checking for move here:
 			 * continuously ask for moves if plr inputs incorrect move
 			 */
-			int[][] possibleMoves = GetMoves(plr);
-
-			System.out.println("\nPossible Moves");
-			for(int i = 0; i < 2; i++) {
-				for(int j = 0; j < 6; j++) {
-					if(i == 0) {
-						System.out.print(possibleMoves[1][5-j]);
-					} else {
-						System.out.print(possibleMoves[0][j]);
-					}
-				}
-				System.out.println();
-			}
-			System.out.println();
+			System.out.println("Player " + playerturn + " Move:");
+			move = players[plr].getMove();
 
 			move = players[plr].getMove();
 
-			// Check if Out Of Bounds
-			while(move < 0 || move > 5) {
-				System.out.println("Index out of bounds. Try again.");
-				move = players[plr].getMove();
-			}
-		} while(Move(move[0], move[1]));
+		} while( Move(plr, move) );
 
 		playerturn = playerturn == 1 ? 0 : 1;
 	}
@@ -221,7 +201,7 @@ public class Board {
 	}
 
 	/*
-	 *
+	 * Checks if the side of the current player is empty, adding all the other players seeds to their score
 	 */
 	public boolean endgame(int[][] availableMoves) {
 		for(int i = 0; i < 6; i++) {
@@ -229,6 +209,12 @@ public class Board {
 				return false;
 			}
 		}
+		int scoringPlayer = playerturn == 1 ? 0 : 1;
+		int sum = 0;
+		for(int i = 0; i < 6; i++) {
+			sum += board[scoringPlayer][i];
+		}
+		score[scoringPlayer] += sum;
 		return true;
 	}
 
