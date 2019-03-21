@@ -197,7 +197,7 @@ public class Board {
 	}
 	
 	/*
-	 * 
+	 * Checks 
 	 */
 	public boolean endgame(int[][] availableMoves) {
 		for(int i = 0; i < 6; i++) {
@@ -205,6 +205,12 @@ public class Board {
 				return false;
 			}
 		}
+		int scoringPlayer = playerturn == 1 ? 0 : 1;
+		int sum = 0;
+		for(int i = 0; i < 6; i++) {
+			sum += board[scoringPlayer][i];
+		}
+		score[scoringPlayer] += sum;
 		return true;
 	}
 
