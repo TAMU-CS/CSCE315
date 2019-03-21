@@ -200,7 +200,7 @@ public class Board {
 	}
 
 	/*
-	 * Checks 
+	 * Checks if the side of the current player is empty, adding all the other players seeds to their score
 	 */
 	public boolean endgame(int[][] availableMoves) {
 		for(int i = 0; i < 6; i++) {
