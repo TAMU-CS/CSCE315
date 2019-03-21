@@ -186,6 +186,16 @@ public class Board {
 			 * put error checking for move here:
 			 * continuously ask for moves if plr inputs incorrect move
 			 */
+			int[][] possibleMoves = GetMoves(plr);
+
+			for(int i = 0; i < 2; i++) {
+				for(int j = 0; j < 6; j++) {
+					System.out.print(possibleMoves[i][j]);
+				}
+				System.out.println();
+			}
+			System.out.println();
+
 			move = players[plr].getMove();
 
 
