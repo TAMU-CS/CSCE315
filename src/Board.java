@@ -186,6 +186,7 @@ public class Board {
 			 * put error checking for move here:
 			 * continuously ask for moves if plr inputs incorrect move
 			 */
+			System.out.println("Player " + playerturn + " Move:");
 			move = players[plr].getMove();
 
 
