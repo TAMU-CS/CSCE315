@@ -36,7 +36,7 @@ public class Board {
 
 		//begin the first turn
 		//This is incorrect, we need to check if there is a possible move!
-		while(!endgame()) {
+		while(!endgame(GetMoves(playerturn))) {
 			//keep getting next turns, which call move for the player
 			NextTurn();
 
