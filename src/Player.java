@@ -27,7 +27,6 @@ public class Player {
 		if(serversided) {
 			Scanner scanObj = new Scanner(System.in);
 			System.out.println("Enter index of your houses:");
-
 			return scanObj.nextInt();
 		}else {
 			return clientHandler.getMove(timeForMove);
