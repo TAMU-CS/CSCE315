@@ -83,17 +83,23 @@ public class Board {
 			else if(dif < 0) {
 				int max = 0;
 				for(int i = 0; i < randHouses.length; i++) {
-					if(randHouses[i] > randHouses[max]) {
+					if(seeds == 1 && dif < 0 && randHouses[i] > 0) {
+						randHouses[i] -= 1;
+						dif += 1;
+					}
+					if(randHouses[i] > randHouses[max] && seeds != 1) {
 						max = i;
 					}
 				}
+				if(seeds != 1) {
 				randHouses[max] += dif;
+				}
 			}
 			
 			//Debug: Display Random Values
-			//for(int i = 0; i < houses; i++) {
-				//System.out.println(randHouses[i]);
-			//}
+			for(int i = 0; i < houses; i++) {
+				System.out.println(randHouses[i]);
+			}
 			
 			for(int i = 0; i < 2; i++) {
 				for(int j = 0; j < houses; j++) {
