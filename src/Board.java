@@ -53,7 +53,7 @@ public class Board {
 		//display who won, etc.
 		if(players[0].getScore() > players[1].getScore()) {
 			System.out.println("Player 0 won!");
-		}else if(players[1].getScore() < players[0].getScore()) {
+		}else if(players[1].getScore() > players[0].getScore()) {
 			System.out.println("Player 1 won!");
 		}else {
 			System.out.println("TIE!");
