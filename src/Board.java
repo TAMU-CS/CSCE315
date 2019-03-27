@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class Board {
 
@@ -12,6 +13,9 @@ public class Board {
 	//player objects, correspond with their score index
 	private Player[] players = new Player[2];
 
+	// Flag that keeps track if Player 2 chose Pie Rule
+	boolean switchOn = false;
+
 	/*
 	 * Default constructor, initiates an empty kalah board with players
 	 */
@@ -23,8 +27,6 @@ public class Board {
 			}
 		}
 
-<<<<<<< HEAD
-=======
 		//initiate score
 		score[0] = 0;
 		score[1] = 0;
@@ -33,7 +35,6 @@ public class Board {
 		playerturn = 0;
 
 		//player initiation
->>>>>>> 91fb25817bd4bdec5fc8e6167c78dd1b8b312827
 		players[0] = new Player();
 		players[1] = new Player();
 
@@ -74,6 +75,7 @@ public class Board {
 			}
 			System.out.println();
 		}
+		System.out.println();
 	}
 
 	public void getPlayerScores() {
@@ -160,7 +162,7 @@ public class Board {
 		//player 1 has control over left half
 		//player 2 has control over right half
 		int [][] moves = new int[2][6];
-		int oplr = plr == 1 ? 0 : 1;
+		int oplr = (plr == 1) ? 0 : 1;
 		for(int i = 0; i < 6; i++){
 			moves[plr][i] = 1;
 			moves[oplr][i] = 0;
@@ -179,16 +181,53 @@ public class Board {
 	 */
 	private void NextTurn() {
 		//query the current player for the next turn
-		int plr = playerturn;
+
+		// plr is dependent if the players are switched from Pie Rule
+		int plr;
+		if(!switchOn) {
+			plr = playerturn; // plr is normal
+		} else { // Player 0 chose to switch
+			if(playerturn == 0) {
+				plr = 1; // Player 0 controls Player 1's stuff
+			} else {
+				plr = 0; // Player 1 controls Player 0's stuff
+			}
+		}
+
 		int move;
 		do {
-			/*
-			 * put error checking for move here:
-			 * continuously ask for moves if plr inputs incorrect move
-			 */
+			System.out.println();
 			printBoard();
 
-			System.out.println("Player " + playerturn + " Move:");
+			if(plr == 1 && players[1].numTurnsHasTaken == 0) { // Player 2 now has option to do Pie Rule
+				System.out.println("Player 1. You have 2 options");
+				System.out.println("1. Continue with your turn");
+				System.out.println("2. Swap places with Player 1");
+				System.out.print("Enter your choice: ");
+
+				Scanner scanObj = new Scanner(System.in);
+
+				int choice = scanObj.nextInt();
+				while(choice < 1 || choice > 2) {
+					System.out.print("Enter a valid choice: ");
+					choice = scanObj.nextInt();
+				}
+
+				if(choice == 2) { // Player 2 chooses to swap
+					Player playerTemp = players[0];
+					players[0] = players[1]; // Player 1 becomes Player 2
+					players[1] = playerTemp; // Player 2 becomes Player 1
+
+					int tempScore = score[0]; // swap the scores
+					score[0] = score[1];
+					score[1] = tempScore;
+
+					plr = 1;
+					playerturn = 0;
+					switchOn = true;
+				}
+			}
+			System.out.println("Player " + playerturn);
 
 			move = players[plr].getMove();
 
@@ -203,19 +242,19 @@ public class Board {
 
 			// Now check if player picked a valid house (house must have stones in it)
 			if(plr == 0) { // this player can only access the 0th row
-				while(possibleMoves[0][move] == 0) { // player picked a house with empty stones
+				while(possibleMoves[plr][move] == 0) { // player picked a house with empty stones
 					System.out.println("Cannot pick empty house! Try again.");
 					move = players[plr].getMove();
 				}
 			} else {
-				while(possibleMoves[1][move] == 0) { // player picked a house with empty stones
+				while(possibleMoves[plr][move] == 0) { // player picked a house with empty stones
 					System.out.println("Cannot pick empty house! Try again.");
 					move = players[plr].getMove();
 				}
 			}
 		} while( Move(plr, move) );
 
-		playerturn = playerturn == 1 ? 0 : 1;
+		playerturn = (playerturn == 1) ? 0 : 1;
 	}
 
 	/*
