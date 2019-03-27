@@ -51,9 +51,9 @@ public class Board {
 		}
 
 		//display who won, etc.
-		if(score[0] > score[1]) {
+		if(players[0].getScore() > players[1].getScore()) {
 			System.out.println("Player 0 won!");
-		}else if(score[1] > score[0]) {
+		}else if(players[1].getScore() < players[0].getScore()) {
 			System.out.println("Player 1 won!");
 		}else {
 			System.out.println("TIE!");
@@ -79,8 +79,8 @@ public class Board {
 	}
 
 	public void getPlayerScores() {
-		System.out.print("Player 0: " + score[0] + "\n");
-		System.out.print("Player 1: " + score[1] + "\n");
+		System.out.print("Player 0: " + players[0].getScore() + "\n");
+		System.out.print("Player 1: " + players[1].getScore() + "\n");
 	}
 
 	/*
@@ -103,7 +103,8 @@ public class Board {
 				if(playerturn == 0 && rowTemp == 0) {
 					//Debug
 					//System.out.println("Player 0 Scores");
-					score[0] += 1;
+					//score[0] += 1;
+					players[0].incrementScore();
 					if(i == numMoves - 1) {
 						return true;
 					}
@@ -115,6 +116,7 @@ public class Board {
 					//Debug
 					//System.out.println("Player 1 Scores");
 					score[1] += 1;
+					players[1].incrementScore();
 					if(i == numMoves - 1) {
 						return true;
 					}
@@ -140,13 +142,17 @@ public class Board {
 						int addToScore = board[1][5 - indexTemp] + board[rowTemp][indexTemp];
 						board[1][5 - indexTemp] = 0;
 						board[rowTemp][indexTemp] = 0;
-						score[0] += addToScore;
+
+						//score[0] += addToScore;
+						players[0].updateScoreWithInt(addToScore);
 					}
 					if(rowTemp == 1) {
 						int addToScore = board[0][5 - indexTemp] + board[rowTemp][indexTemp];
 						board[0][5 - indexTemp] = 0;
 						board[rowTemp][indexTemp] = 0;
-						score[1] += addToScore;
+
+						//score[1] += addToScore;
+						players[1].updateScoreWithInt(addToScore);
 					}
 				}
 			}
@@ -197,8 +203,9 @@ public class Board {
 		int move;
 		do {
 			System.out.println();
-			printBoard();
+			//printBoard();
 
+			// Pie Rule
 			if(plr == 1 && players[1].numTurnsHasTaken == 0) { // Player 2 now has option to do Pie Rule
 				System.out.println("Player 1. You have 2 options");
 				System.out.println("1. Continue with your turn");
@@ -218,15 +225,15 @@ public class Board {
 					players[0] = players[1]; // Player 1 becomes Player 2
 					players[1] = playerTemp; // Player 2 becomes Player 1
 
-					int tempScore = score[0]; // swap the scores
-					score[0] = score[1];
-					score[1] = tempScore;
+					//int tempScore = score[0]; // swap the scores
+					//score[0] = score[1];
+					//score[1] = tempScore;
 
 					plr = 1;
 					playerturn = 0;
 					switchOn = true;
 				}
-			}
+			} // End Pie Rule
 			System.out.println("Player " + playerturn);
 
 			move = players[plr].getMove();
@@ -279,6 +286,9 @@ public class Board {
 			sum += board[scoringPlayer][i];
 		}
 		score[scoringPlayer] += sum;
+
+		System.out.println("Endgame");
+
 		return true;
 	}
 
