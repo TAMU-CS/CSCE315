@@ -1,62 +1,89 @@
-// A Java program for a Server 
-import java.net.*; 
-import java.io.*; 
+import java.net.*;
+import java.io.*;
 
-public class Server 
-{ 
-	//initialize socket and input stream 
-	private Socket		 socket = null; 
-	private ServerSocket server = null; 
-	private DataInputStream in	 = null; 
+public class Server {
+	//socket to receive info from client sockets
+    private ServerSocket serverSocket;
+ 
+    //starts server to listen in an infinite loop to handle client handler threads
+    public void start(int port) throws IOException {
+        serverSocket = new ServerSocket(port);
+        int tid = 0;
+        while (true) {
+        	System.out.println("new socket");
+            new ClientHandler(serverSocket.accept(), tid).start();
+            
+            tid++;
+        }
+    }
 
-	// constructor with port 
-	public Server(int port) 
-	{ 
-		// starts server and waits for a connection 
-		try
-		{ 
-			server = new ServerSocket(port); 
-			System.out.println("Server started"); 
-
-			System.out.println("Waiting for a client ..."); 
-
-			socket = server.accept(); 
-			System.out.println("Client accepted"); 
-
-			// takes input from the client socket 
-			in = new DataInputStream( 
-				new BufferedInputStream(socket.getInputStream())); 
-
-			String line = ""; 
-
-			// reads message from client until "Over" is sent 
-			while (!line.equals("Over")) 
-			{ 
-				try
-				{ 
-					line = in.readUTF(); 
-					System.out.println(line); 
-
-				} 
-				catch(IOException i) 
-				{ 
-					System.out.println(i); 
-				} 
-			} 
-			System.out.println("Closing connection"); 
-
-			// close connection 
-			socket.close(); 
-			in.close(); 
-		} 
-		catch(IOException i) 
-		{ 
-			System.out.println(i); 
-		} 
-	} 
-
-	public static void main(String args[]) 
-	{ 
-		Server server = new Server(5000); 
-	} 
-} 
+    public void stop() throws IOException {
+        serverSocket.close();
+    }
+    
+    public static class ClientHandler extends Thread{
+    	private Socket clientSocket;
+    	private PrintWriter out;
+    	private BufferedReader in;
+    	private int id;
+    	
+    	private int curMove;
+    	
+    	//create a player to represent this client
+    	private Player plr;
+    	
+    	public ClientHandler(Socket socket, int tid) {
+    		this.clientSocket = socket;
+    		id = tid;
+    	}
+    	
+    	public void run() {
+            try {
+				out = new PrintWriter(clientSocket.getOutputStream(), true);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            try {
+				in = new BufferedReader(
+				  new InputStreamReader(clientSocket.getInputStream()));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+             
+            String inputLine;
+            try {
+				while ((inputLine = in.readLine()) != null) {
+				    System.out.println(inputLine);
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+ 
+            try {
+				in.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            out.close();
+            try {
+				clientSocket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+    	
+    	public int getMove(int timeForMove) {
+    		return 0;
+    	}
+    }
+    
+    public static void main(String[] args) throws IOException {
+        Server server=new Server();
+        server.start(6666);
+    }
+}
