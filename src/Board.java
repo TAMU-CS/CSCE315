@@ -4,10 +4,13 @@ import java.util.Scanner;
 public class Board {
 
 	//board data structure, 2x6 board to represent houses for seeds
-	private int[][] board = new int[2][6];
+	private int[][] board; // = new int[2][6];
+	private int houses;
+	private int seeds;
 
 	//score datastructure for keep track of scores
 	private int[] score = new int[2];
+	private int[] playerTracker = new int[2];
 	private int playerturn;
 
 	//player objects, correspond with their score index
@@ -19,11 +22,27 @@ public class Board {
 	/*
 	 * Default constructor, initiates an empty kalah board with players
 	 */
-	public Board() {
+	public Board(int numHouses, int numSeeds, Boolean random) {
+		if(numHouses > 3 && numHouses < 10) {
+			board = new int[2][numHouses];
+			houses = numHouses;
+		}
+		else {
+			board = new int[2][6];
+			houses = 6;
+		}
+		
 		// init board
+		if(numSeeds > 0 && numSeeds < 11) {
+			seeds = numSeeds;
+		}
+		else {
+			seeds = 4;
+		}
+		
 		for(int i = 0; i < 2; i++) {
-			for(int j = 0; j < 6; j++) {
-				board[i][j] = 4;
+			for(int j = 0; j < houses; j++) {
+				board[i][j] = seeds;
 			}
 		}
 
@@ -46,8 +65,8 @@ public class Board {
 
 			//display the current Kalah state
 			//use print temporarily for now
-			printBoard();
-			getPlayerScores();
+			//printBoard();
+			//getPlayerScores();
 		}
 
 		//display who won, etc.
@@ -65,9 +84,9 @@ public class Board {
 	 */
 	public void printBoard() {
 		for(int i = 0; i < 2; i++) {
-			for(int j = 0; j < 6; j++) {
+			for(int j = 0; j < houses; j++) {
 				if(i == 0) {
-					System.out.print(board[1][5-j]);
+					System.out.print(board[1][houses-1-j]);
 				}
 				if(i == 1) {
 					System.out.print(board[0][j]);
@@ -98,7 +117,7 @@ public class Board {
 		for(int i = 0; i < numMoves; i++) {
 			indexTemp++;
 			//Check if at the end of the row
-			if(indexTemp == 6) {
+			if(indexTemp == houses) {
 				//Player 1 scores
 				if(playerturn == 0 && rowTemp == 0) {
 					//Debug
@@ -125,11 +144,13 @@ public class Board {
 				}
 				//Player 1 moves from side 2 to side 1
 				else if(rowTemp == 0) {
+					board[1][0] += 1;
 					rowTemp = 1;
 					indexTemp = -1;
 				}
 				//Player 2 moves from side 1 to side 2
 				else {
+					board[0][0] += 1;
 					rowTemp = 0;
 					indexTemp = -1;
 				}
@@ -137,7 +158,7 @@ public class Board {
 			else {
 				board[rowTemp][indexTemp] += 1;
 				//Check if the last piece is deposited in an empty spot on the player's side
-				if(i == numMoves - 1 && board[rowTemp][indexTemp] == 1 && playerturn != rowTemp) {
+				if(i == numMoves - 1 && board[rowTemp][indexTemp] == 1 && playerturn == rowTemp) {
 					if(rowTemp == 0) {
 						int addToScore = board[1][5 - indexTemp] + board[rowTemp][indexTemp];
 						board[1][5 - indexTemp] = 0;
@@ -202,8 +223,13 @@ public class Board {
 
 		int move;
 		do {
-			System.out.println();
-			//printBoard();
+			/*
+			 * put error checking for move here:
+			 * continuously ask for moves if plr inputs incorrect move
+			 */
+			printBoard();
+			getPlayerScores();
+
 
 			// Pie Rule
 			if(plr == 1 && players[1].numTurnsHasTaken == 0) { // Player 2 now has option to do Pie Rule
@@ -268,7 +294,12 @@ public class Board {
 	 * Main, runs board
 	 */
 	public static void main(String[] args) {
-		Board board = new Board();
+		Scanner newObj = new Scanner(System.in);
+		System.out.println("Enter # of houses, # of seeds, and if random");
+		int houseIn = newObj.nextInt();
+		int seedsIn = newObj.nextInt();
+		Boolean randIn = newObj.hasNextShort();
+		Board board = new Board(houseIn, seedsIn, randIn);
 	}
 
 	/*
