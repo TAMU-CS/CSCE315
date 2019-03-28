@@ -1,5 +1,6 @@
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.Random;
 
 public class Board {
 
@@ -22,7 +23,8 @@ public class Board {
 	/*
 	 * Default constructor, initiates an empty kalah board with players
 	 */
-	public Board(int numHouses, int numSeeds, Boolean random) {
+	public Board(int numHouses, int numSeeds, Boolean rando) {
+		System.out.println(rando);
 		if(numHouses > 3 && numHouses < 10) {
 			board = new int[2][numHouses];
 			houses = numHouses;
@@ -40,9 +42,76 @@ public class Board {
 			seeds = 4;
 		}
 		
-		for(int i = 0; i < 2; i++) {
-			for(int j = 0; j < houses; j++) {
-				board[i][j] = seeds;
+		if(rando == true) {
+			//System.out.println("Debug");
+			int totalSeeds = seeds * houses;
+			int sum = 0;
+			int tempSeed;
+			int range = 2;
+			int[] randHouses = new int[houses];
+			Random generator = new Random();
+			
+			//Generate an array of random values along a normal distribution
+			for(int i = 0; i < houses; i++) {
+				if(seeds <= 2) {
+					range = 1;
+				}
+				double randDouble = generator.nextGaussian() * range + seeds;
+				tempSeed = (int) Math.round(randDouble);
+				if(tempSeed < 0) {
+					tempSeed *= -1;
+				}
+				sum += tempSeed;
+				randHouses[i] = tempSeed;
+			}
+			
+			int dif = totalSeeds - sum;
+			
+			//Debug: Display Difference
+			System.out.println("Diff: " + dif);
+			
+			//Check difference in totals
+			if(dif > 0) {
+				int min = 0;
+				for(int i = 0; i < randHouses.length; i++) {
+					if(randHouses[i] < randHouses[min]) {
+						min = i;
+					}
+				}
+				randHouses[min] += dif;
+			}
+			else if(dif < 0) {
+				int max = 0;
+				for(int i = 0; i < randHouses.length; i++) {
+					if(seeds == 1 && dif < 0 && randHouses[i] > 0) {
+						randHouses[i] -= 1;
+						dif += 1;
+					}
+					if(randHouses[i] > randHouses[max] && seeds != 1) {
+						max = i;
+					}
+				}
+				if(seeds != 1) {
+				randHouses[max] += dif;
+				}
+			}
+			
+			//Debug: Display Random Values
+			for(int i = 0; i < houses; i++) {
+				System.out.println(randHouses[i]);
+			}
+			
+			for(int i = 0; i < 2; i++) {
+				for(int j = 0; j < houses; j++) {
+						board[i][j] = randHouses[j];
+				}
+			}
+		}
+		else {
+			for(int i = 0; i < 2; i++) {
+				for(int j = 0; j < houses; j++) {
+					board[i][j] = seeds;
+				}
 			}
 		}
 
@@ -298,7 +367,7 @@ public class Board {
 		System.out.println("Enter # of houses, # of seeds, and if random");
 		int houseIn = newObj.nextInt();
 		int seedsIn = newObj.nextInt();
-		Boolean randIn = newObj.hasNextShort();
+		Boolean randIn = newObj.nextBoolean();
 		Board board = new Board(houseIn, seedsIn, randIn);
 	}
 
