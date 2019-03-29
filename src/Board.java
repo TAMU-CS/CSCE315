@@ -123,8 +123,8 @@ public class Board {
 		playerturn = 0;
 
 		//player initiation
-		players[0] = new Player();
-		players[1] = new Player();
+		players[0] = new Player(0);
+		players[1] = new Player(1);
 
 		//begin the first turn
 		//This is incorrect, we need to check if there is a possible move!
@@ -167,8 +167,8 @@ public class Board {
 	}
 
 	public void getPlayerScores() {
-		System.out.print("Player 0: " + players[0].getScore() + "\n");
-		System.out.print("Player 1: " + players[1].getScore() + "\n");
+		System.out.print("Player " + players[0].getSide() + ": " + players[0].getScore() + "\n");
+		System.out.print("Player " + players[1].getSide() + ": " + players[1].getScore() + "\n");
 	}
 
 	/*
@@ -188,11 +188,11 @@ public class Board {
 			//Check if at the end of the row
 			if(indexTemp == houses) {
 				//Player 1 scores
-				if(playerturn == 0 && rowTemp == 0) {
+				if(row == rowTemp && row == 0) {
 					//Debug
 					//System.out.println("Player 0 Scores");
 					//score[0] += 1;
-					players[0].incrementScore();
+					players[row].incrementScore();
 					if(i == numMoves - 1) {
 						return true;
 					}
@@ -200,11 +200,12 @@ public class Board {
 					indexTemp = -1;
 				}
 				//Player 2 scores
-				else if(playerturn == 1 && rowTemp == 1) {
+				else if(row == 1 && rowTemp == row) {
 					//Debug
 					//System.out.println("Player 1 Scores");
-					score[1] += 1;
-					players[1].incrementScore();
+					//score[1] += 1;
+					System.out.println("Row: " + row + " Player: " + players[row].getSide());
+					players[row].incrementScore();
 					if(i == numMoves - 1) {
 						return true;
 					}
@@ -227,14 +228,14 @@ public class Board {
 			else {
 				board[rowTemp][indexTemp] += 1;
 				//Check if the last piece is deposited in an empty spot on the player's side
-				if(i == numMoves - 1 && board[rowTemp][indexTemp] == 1 && playerturn == rowTemp) {
+				if(i == numMoves - 1 && board[rowTemp][indexTemp] == 1 && row == rowTemp) {
 					if(rowTemp == 0) {
 						int addToScore = board[1][5 - indexTemp] + board[rowTemp][indexTemp];
 						board[1][5 - indexTemp] = 0;
 						board[rowTemp][indexTemp] = 0;
 
 						//score[0] += addToScore;
-						players[0].updateScoreWithInt(addToScore);
+						players[row].updateScoreWithInt(addToScore);
 					}
 					if(rowTemp == 1) {
 						int addToScore = board[0][5 - indexTemp] + board[rowTemp][indexTemp];
@@ -242,7 +243,7 @@ public class Board {
 						board[rowTemp][indexTemp] = 0;
 
 						//score[1] += addToScore;
-						players[1].updateScoreWithInt(addToScore);
+						players[row].updateScoreWithInt(addToScore);
 					}
 				}
 			}
@@ -323,7 +324,10 @@ public class Board {
 					//int tempScore = score[0]; // swap the scores
 					//score[0] = score[1];
 					//score[1] = tempScore;
-
+					
+					int tempScore = players[0].getScore();
+					players[0].score = players[1].getScore();
+					players[1].score = tempScore;
 					plr = 1;
 					playerturn = 0;
 					switchOn = true;
