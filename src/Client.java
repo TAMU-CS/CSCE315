@@ -6,15 +6,18 @@ public class Client {
     private Socket clientSocket;
     private PrintWriter out;
     private BufferedReader in;
+    private Player plr;
  
     public void startConnection(String ip, int port) throws IOException {
         clientSocket = new Socket(ip, port);
         out = new PrintWriter(clientSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         
-        //io stuff
-        Scanner scanObj = new Scanner(System.in);
+        //create player object
+        plr = new Player();
         
+        //io
+        Scanner scanObj = new Scanner(System.in);
         String inputLine;
         
         //1. welcome message read in
@@ -23,6 +26,8 @@ public class Client {
         //2. setup board configuration
         inputLine = in.readLine();
         System.out.println(inputLine);
+
+        
         
         //3. acknowledge that input was received
         out.println("READY");
@@ -32,24 +37,20 @@ public class Client {
         	String tokens[] = inputLine.split(" ");
         	
         	//check for different cases
-        	System.out.println(inputLine);
-        	switch(tokens[0].charAt(0)){
-        	case '1':	//standard get move
-        		System.out.println("Enter Move:");
-        		break;
-        	case '2':	//pie rule request
-        		System.out.println("PIE Request Rule:");
-        		break;
-        	case '3':	//game end message
-        		break;
-        	}
-        	if(tokens[0] == "1") { //standard get move
-        		
-        	}else { //pie rule
-        		
+        	//System.out.println(inputLine);
+        	
+        	//display board and update state
+    		Player oplr;
+    		Board board;
+    		int opt = Integer.parseInt(tokens[0]);
+        	if(opt == 1 || opt == 2) {
+        		oplr = new Player();
+        		board = new Board(tokens);
+        		System.out.println("Board State:");
+        		board.printBoard();
         	}
         	
-        	String resp = scanObj.nextLine();
+        	String resp = plr.getMove(0, opt) + "";
         	
         	if(resp.length() > 0) {
         		out.println(resp); //response

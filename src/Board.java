@@ -21,6 +21,23 @@ public class Board {
 	boolean switchOn = false;
 
 	/*
+	 * constructor that takes in stringified version and creates from there
+	 * used for client
+	 */
+	public Board(String tokens[]) {
+		//read in length
+		int length = Integer.parseInt(tokens[1]);
+		board = new int[2][length];
+		houses = length;
+		
+		for(int i = 0; i < 2; i++) {
+			for(int j = 0; j < length; j++) {
+				board[i][j] = Integer.parseInt(tokens[2 + i * length + j]);
+			}
+		}		
+	}
+	
+	/*
 	 * constructor, initiates kalah board and all other values associated with the board
 	 */
 	public Board(int numHouses, int numSeeds, Boolean random, int timeForMoves) {
