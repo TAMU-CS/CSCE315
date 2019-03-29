@@ -8,4 +8,5 @@ public int minimax(int depth, int nodeIndex, boolean maxPlayer,
   if(depth == 3) {
     return board
   }
+
 }
