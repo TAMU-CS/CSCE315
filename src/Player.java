@@ -10,7 +10,6 @@ public class Player {
 		score = 0;
 	}
 
-
 	public int getNumTurns() {
 		return numTurnsHasTaken;
 	}

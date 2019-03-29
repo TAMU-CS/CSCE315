@@ -67,7 +67,7 @@ public class Board {
 		for(int i = 0; i < 2; i++) {
 			for(int j = 0; j < 6; j++) {
 				if(i == 0) {
-					System.out.print(board[1][5-j]);
+					System.out.print(board[1][6-j]);
 				}
 				if(i == 1) {
 					System.out.print(board[0][j]);
@@ -225,13 +225,12 @@ public class Board {
 					players[0] = players[1]; // Player 1 becomes Player 2
 					players[1] = playerTemp; // Player 2 becomes Player 1
 
-					//int tempScore = score[0]; // swap the scores
-					//score[0] = score[1];
-					//score[1] = tempScore;
-
 					plr = 1;
 					playerturn = 0;
 					switchOn = true;
+
+					System.out.print("Switched scores");
+					getPlayerScores();
 				}
 			} // End Pie Rule
 			System.out.println("Player " + playerturn);
