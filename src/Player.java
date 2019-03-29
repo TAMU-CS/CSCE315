@@ -10,7 +10,7 @@ public class Player {
 	 * default constructor
 	 */
 	public Player() {
-		serversided = true;
+		serversided = false;
 		numTurnsHasTaken = 0;
 		score = 0;
 	}
@@ -21,7 +21,7 @@ public class Player {
 	 */
 	public Player(Server.ClientHandler ch) {
 		clientHandler = ch;
-		serversided = false;
+		serversided = true;
 	}
 
 	public int getNumTurns() {

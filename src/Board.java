@@ -7,6 +7,7 @@ public class Board {
 	private int[][] board; // = new int[2][6];
 	private int houses;
 	private int seeds;
+	private int timeToMove;
 
 	//score datastructure for keep track of scores
 	private int[] score = new int[2];
@@ -22,7 +23,8 @@ public class Board {
 	/*
 	 * Default constructor, initiates an empty kalah board with players
 	 */
-	public Board(int numHouses, int numSeeds, Boolean random) {
+	public Board(int numHouses, int numSeeds, Boolean random, int timeForMoves) {
+		timeToMove = timeForMoves;
 		if(numHouses > 3 && numHouses < 10) {
 			board = new int[2][numHouses];
 			houses = numHouses;
@@ -262,12 +264,12 @@ public class Board {
 			} // End Pie Rule
 			System.out.println("Player " + playerturn);
 
-			move = players[plr].getMove();
+			move = players[plr].getMove(timeToMove);
 
 			// Check for Out of Bounds
 			while(move < 0 || move > 5) {
 				System.out.println("Index out of bounds. Try again.");
-				move = players[plr].getMove();
+				move = players[plr].getMove(timeToMove);
 			}
 
 			// Now figure out possible moves for this player
@@ -277,29 +279,17 @@ public class Board {
 			if(plr == 0) { // this player can only access the 0th row
 				while(possibleMoves[plr][move] == 0) { // player picked a house with empty stones
 					System.out.println("Cannot pick empty house! Try again.");
-					move = players[plr].getMove();
+					move = players[plr].getMove(timeToMove);
 				}
 			} else {
 				while(possibleMoves[plr][move] == 0) { // player picked a house with empty stones
 					System.out.println("Cannot pick empty house! Try again.");
-					move = players[plr].getMove();
+					move = players[plr].getMove(timeToMove);
 				}
 			}
 		} while( Move(plr, move) );
 
 		playerturn = (playerturn == 1) ? 0 : 1;
-	}
-
-	/*
-	 * Main, runs board
-	 */
-	public static void main(String[] args) {
-		Scanner newObj = new Scanner(System.in);
-		System.out.println("Enter # of houses, # of seeds, and if random");
-		int houseIn = newObj.nextInt();
-		int seedsIn = newObj.nextInt();
-		Boolean randIn = newObj.hasNextShort();
-		Board board = new Board(houseIn, seedsIn, randIn);
 	}
 
 	/*
@@ -323,4 +313,17 @@ public class Board {
 		return true;
 	}
 
+
+	/*
+	 * Main, runs board
+	 */
+	public static void main(String[] args) {
+		Scanner newObj = new Scanner(System.in);
+		System.out.println("Enter # of houses, # of seeds, and if random");
+		int houseIn = newObj.nextInt();
+		int seedsIn = newObj.nextInt();
+		Boolean randIn = newObj.hasNextShort();
+		Board board = new Board(houseIn, seedsIn, randIn, 0);
+	}
+	
 }
