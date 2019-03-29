@@ -6,19 +6,37 @@ public class Server {
 	//socket to receive info from client sockets
     private ServerSocket serverSocket;
     private Board board;
+    private Player players[];
+    public boolean plrJoin[];
+    
+    //constructor
+    public Server(Board _board) {
+    	board = _board;
+    }
  
     //starts server to listen in an infinite loop to handle client handler threads
     public void start(int port) throws IOException {
+    	
+    	//server socket setup with plr id
         serverSocket = new ServerSocket(port);
         int tid = 0;
+        players = new Player[2]; 
+        
+        //loop through client handlers and set up their sockets
         while (true) {
         	ClientHandler ch;
-        	ch = new ClientHandler(serverSocket.accept(), tid);        	
+        	ch = new ClientHandler(serverSocket.accept(), tid, this);        	
         	Player plr = new Player(ch);
+        	players[tid] = plr;
     		ch.setPlr(plr);
         	ch.run();
             tid++;
         }
+    }
+    
+    public void initGame() {
+    	//create the player objects
+    	board.StartGame(players[0], players[1]);
     }
 
     public void stop() throws IOException {
@@ -31,13 +49,15 @@ public class Server {
     	private BufferedReader in;
     	private int id;
     	private int curMove;
+    	private Server server;
     	
     	//create a player to represent this client
     	private Player plr;
     	
-    	public ClientHandler(Socket socket, int tid) {
+    	public ClientHandler(Socket socket, int tid, Server serve) {
     		this.clientSocket = socket;
     		id = tid;
+    		server = serve;
     	}
     	
     	public void setPlr(Player tplr) {
@@ -58,9 +78,16 @@ public class Server {
 				
 				//user responds with ready
 	            String inputLine = in.readLine();
-	            
-	            //call to start the match
 
+	            //update player status
+	            server.plrJoin[id] = true;
+	            
+	            //check if both players are ready
+	            if(server.plrJoin[0] && server.plrJoin[1]) {
+	            	//initiate the board in server class
+	            	server.initGame();
+	            }
+	            
 //				in.close();
 //	            out.close();
 //				clientSocket.close();
@@ -72,6 +99,15 @@ public class Server {
     	}
     	
     	public int getMove(int timeForMove) {
+    		//call read line from in buffer
+    		try {
+    			out.println("Your Move:");
+    			String inputLine = in.readLine();
+        		return Integer.parseInt(inputLine);
+    		}catch(IOException e) {
+    			e.printStackTrace();
+    		}
+    		
     		return 0;
     	}
     }
@@ -113,11 +149,18 @@ public class Server {
     	//create player objects
     	
     	//create board
-    	//Board board = new Board(6, 4, false, 0);
+    	Board board = new Board(6, 4, false, 0);
     	//new Board(housesPerRow, seedsPerHouse, randomizeSeeds);
     	
-    	Server server=new Server();
+    	//set up server object
+    	Server server=new Server(board);
     	int port = 6666;
+    	
+    	//depending on which players are remote, set up the connection
+    	server.plrJoin = new boolean[2];
+    	server.plrJoin[0] = false;
+    	server.plrJoin[1] = false;
+    	
         server.start(port);
     }
 }

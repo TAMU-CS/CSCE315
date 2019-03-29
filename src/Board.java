@@ -21,7 +21,7 @@ public class Board {
 	boolean switchOn = false;
 
 	/*
-	 * Default constructor, initiates an empty kalah board with players
+	 * constructor, initiates kalah board and all other values associated with the board
 	 */
 	public Board(int numHouses, int numSeeds, Boolean random, int timeForMoves) {
 		timeToMove = timeForMoves;
@@ -54,10 +54,14 @@ public class Board {
 
 		//player turn is set to player 1 by default
 		playerturn = 0;
-
-		//player initiation
-		players[0] = new Player();
-		players[1] = new Player();
+	}
+	
+	/*
+	 * StartGame is the main game loop where it players through the game logic
+	 */
+	public void StartGame(Player p0, Player p1) {
+		players[0] = p0;
+		players[1] = p1;
 
 		//begin the first turn
 		//This is incorrect, we need to check if there is a possible move!
@@ -78,7 +82,7 @@ public class Board {
 			System.out.println("Player 1 won!");
 		}else {
 			System.out.println("TIE!");
-		}
+		}		
 	}
 
 	/*
