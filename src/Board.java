@@ -244,13 +244,15 @@ public class Board {
 				System.out.println("2. Swap places with Player 1");
 				System.out.print("Enter your choice: ");
 
-				Scanner scanObj = new Scanner(System.in);
-
-				int choice = scanObj.nextInt();
-				while(choice < 1 || choice > 2) {
-					System.out.print("Enter a valid choice: ");
-					choice = scanObj.nextInt();
-				}
+//				Scanner scanObj = new Scanner(System.in);
+//
+//				int choice = scanObj.nextInt();
+//				while(choice < 1 || choice > 2) {
+//					System.out.print("Enter a valid choice: ");
+//					choice = scanObj.nextInt();
+//				}
+				
+				int choice = players[playerturn].getMove(0);
 
 				if(choice == 2) { // Player 2 chooses to swap
 					Player playerTemp = players[0];

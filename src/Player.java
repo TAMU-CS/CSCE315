@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 public class Player {
 	Server.ClientHandler clientHandler;
-	boolean serversided;
+	boolean consoleInput;
 	int numTurnsHasTaken;
 	int score;
 	
@@ -10,7 +10,7 @@ public class Player {
 	 * default constructor
 	 */
 	public Player() {
-		serversided = false;
+		consoleInput = true;
 		numTurnsHasTaken = 0;
 		score = 0;
 	}
@@ -21,7 +21,7 @@ public class Player {
 	 */
 	public Player(Server.ClientHandler ch) {
 		clientHandler = ch;
-		serversided = true;
+		consoleInput = false;
 	}
 
 	public int getNumTurns() {
@@ -46,7 +46,7 @@ public class Player {
 	 */
 	public int getMove(int timeForMove) {
 		numTurnsHasTaken++;
-		if(serversided) {
+		if(consoleInput) {
 			Scanner scanObj = new Scanner(System.in);
 			System.out.println("Enter index of your houses:");
 			return scanObj.nextInt();

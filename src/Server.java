@@ -31,6 +31,9 @@ public class Server {
     		ch.setPlr(plr);
         	ch.run();
             tid++;
+            
+            //print that a player has joined
+            System.out.println("Player Has Joined: " + tid);
         }
     }
     
@@ -77,7 +80,7 @@ public class Server {
 				out.println("BoardConfigurations");
 				
 				//user responds with ready
-	            String inputLine = in.readLine();
+	            //String inputLine = in.readLine();
 
 	            //update player status
 	            server.plrJoin[id] = true;
