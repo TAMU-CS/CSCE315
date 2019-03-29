@@ -17,7 +17,6 @@ public class Player {
 		side = defSide;
 	}
 
-
 	/*
 	 * construct player with client handler
 	 */
@@ -64,7 +63,7 @@ public class Player {
 			Scanner scanObj = new Scanner(System.in);
 			System.out.println("Enter index of your houses:");
 			return scanObj.nextInt();
-		}else {
+		} else {
 			return clientHandler.getMove(timeForMove);
 		}
 	}

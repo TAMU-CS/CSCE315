@@ -1,8 +1,5 @@
 import java.util.*;
 
-int MAX = 1000;
-int MIN = -1000;
-
 public int miniMax(int depth, boolean isMaximizingPlayer, int playerturn) {
   // Get possible next moves
   int[][] nextMoves = GetMoves(playerturn);
@@ -18,7 +15,7 @@ public int miniMax(int depth, boolean isMaximizingPlayer, int playerturn) {
     for(int[] move: nextMoves) {
 
       // figure out best move for this player
-      board[[move[0]][move[1]]].content = playerturn;
+      board[[move[0]][move[1]]] = playerturn;
 
       if(isMaximizingPlayer) { // AI is the maximinizing player
         currentScore = miniMax(depth - 1, true, 1);
@@ -34,7 +31,7 @@ public int miniMax(int depth, boolean isMaximizingPlayer, int playerturn) {
           }
         }
         // Undo move
-        board[[move[0]][move[1]]].content = -1;
+        board[[move[0]][move[1]]] = -1;
       }
     }
   }

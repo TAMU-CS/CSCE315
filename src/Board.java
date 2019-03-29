@@ -120,8 +120,6 @@ public class Board {
 			}
 		}
 
-		minimax_board = board; //
-
 		//initiate score
 		score[0] = 0;
 		score[1] = 0;
@@ -276,7 +274,6 @@ public class Board {
 				moves[plr][i] = 0;
 			}
 		}
-
 		return moves;
 	}
 
@@ -327,10 +324,6 @@ public class Board {
 					Player playerTemp = players[0];
 					players[0] = players[1]; // Player 1 becomes Player 2
 					players[1] = playerTemp; // Player 2 becomes Player 1
-
-					//int tempScore = score[0]; // swap the scores
-					//score[0] = score[1];
-					//score[1] = tempScore;
 
 					int tempScore = players[0].getScore();
 					players[0].score = players[1].getScore();
@@ -402,44 +395,4 @@ public class Board {
 
 		return true;
 	}
-
-	/*public int miniMax(int depth, boolean isMaximizingPlayer, int playerturn) {
-	  // Get possible next moves
-	  int[][] nextMoves = GetMoves(playerturn);
-
-	  int bestScore = (isMaximizingPlayer) ? Integer.MIN_VALUE : Integer.MAX_VALUE;
-	  int currentScore;
-	  int bestRow = -1;
-	  int bestCol = -1;
-
-	  if(nextMoves.isEmpty() || depth == 0) {
-	    System.out.println("Game over");
-	  } else {
-	    for(int[] move: nextMoves) {
-
-	      // figure out best move for this player
-	      minimax_board[[move[0]][move[1]]] = playerturn;
-
-	      if(isMaximizingPlayer) { // AI is the maximinizing player
-	        currentScore = miniMax(depth - 1, true, 1);
-	        if(currentScore > bestScore) {
-	          bestScore = currentScore;
-	          bestRow = move[0];
-	          bestCol = move[1];
-	        } else { // Human player
-	          currentScore = miniMax(depth - 1, false, 0);
-	          if(currentScore < bestScore) {
-	            bestRow = move[0];
-	            bestCol = move[1];
-	          }
-	        }
-	        // Undo move
-	        minimax_board[[move[0]][move[1]]] = -1;
-	      }
-	    }
-	  }
-	  return new int[] {bestScore, bestRow, bestCol};
-	}*/
-
-
 }
