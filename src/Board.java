@@ -218,9 +218,8 @@ public class Board {
 					players[0] = players[1]; // Player 1 becomes Player 2
 					players[1] = playerTemp; // Player 2 becomes Player 1
 
-					int tempScore = score[0]; // swap the scores
-					score[0] = score[1];
-					score[1] = tempScore;
+					int score = players[0].score
+
 
 					plr = 1;
 					playerturn = 0;

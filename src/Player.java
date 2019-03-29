@@ -6,7 +6,6 @@ public class Player {
 
 	}
 
-
 	/*
 	 * GetMove, returns the i, j position of the mancala house
 	 * the player attempts to move
