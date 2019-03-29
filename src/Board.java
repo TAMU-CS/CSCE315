@@ -153,10 +153,6 @@ public class Board {
 		players[0] = p0;
 		players[1] = p1;
 
-		//player initiation
-		players[0] = new Player(0);
-		players[1] = new Player(1);
-
 		//begin the first turn
 		//This is incorrect, we need to check if there is a possible move!
 		while(!endgame(GetMoves(playerturn))) {

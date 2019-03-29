@@ -107,6 +107,7 @@ public class Server {
     	public int getMove(int timeForMove, int opt) {
     		//call read line from in buffer
     		try {
+    			System.out.println("Requestion plr move...");
     			out.println(
     					opt + " " +
     					server.board.toString()
