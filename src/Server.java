@@ -27,7 +27,7 @@ public class Server {
             System.out.println("Player " + tid + " Joined!");
         	ClientHandler ch;
         	ch = new ClientHandler(serverSocket.accept(), tid, this);        	
-        	Player plr = new Player(ch);
+        	Player plr = new Player(ch, tid);
         	players[tid] = plr;
     		ch.setPlr(plr);
         	ch.run();
@@ -75,7 +75,12 @@ public class Server {
 				out.println("Welcome");
 				
 				//respond with board configurations
-				out.println("BoardConfigurations");
+				out.println("INFO " + 
+					server.board.houses + " " + 
+					server.board.seeds + " " + 
+					server.board.timeToMove + " " +
+					id
+				);
 				
 				//user responds with ready
 	            String inputLine = in.readLine();

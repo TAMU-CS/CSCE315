@@ -13,9 +13,6 @@ public class Client {
         out = new PrintWriter(clientSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         
-        //create player object
-        plr = new Player();
-        
         //io
         Scanner scanObj = new Scanner(System.in);
         String inputLine;
@@ -26,8 +23,11 @@ public class Client {
         //2. setup board configuration
         inputLine = in.readLine();
         System.out.println(inputLine);
+    	String confTokens[] = inputLine.split(" ");
 
-        
+        //create player object
+        plr = new Player(Integer.parseInt(confTokens[4]));  
+        System.out.println("Hello Player " + plr.side + "!");
         
         //3. acknowledge that input was received
         out.println("READY");
@@ -44,7 +44,8 @@ public class Client {
     		Board board;
     		int opt = Integer.parseInt(tokens[0]);
         	if(opt == 1 || opt == 2) {
-        		oplr = new Player();
+        		int oplrId = plr.side == 1 ? 0 : 1;
+        		oplr = new Player(oplrId);
         		board = new Board(tokens);
         		System.out.println("Board State:");
         		board.printBoard();

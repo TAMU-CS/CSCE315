@@ -1,13 +1,14 @@
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.Random;
 
 public class Board {
 
 	//board data structure, 2x6 board to represent houses for seeds
 	private int[][] board; // = new int[2][6];
-	private int houses;
-	private int seeds;
-	private int timeToMove;
+	int houses;
+	int seeds;
+	int timeToMove;
 
 	//score datastructure for keep track of scores
 	private int[] score = new int[2];
@@ -59,9 +60,81 @@ public class Board {
 			seeds = 4;
 		}
 		
-		for(int i = 0; i < 2; i++) {
-			for(int j = 0; j < houses; j++) {
-				board[i][j] = seeds;
+		if(random == true) {
+			//System.out.println("Debug");
+			int totalSeeds = seeds * houses;
+			int sum = 0;
+			int tempSeed;
+			int range = 2;
+			int[] randHouses = new int[houses];
+			Random generator = new Random();
+			
+			//Generate an array of random values along a normal distribution
+			for(int i = 0; i < houses; i++) {
+				if(seeds == 2) {
+					range = 1;
+				}
+				double randDouble = generator.nextGaussian() * range + seeds;
+				tempSeed = (int) Math.round(randDouble);
+				if(tempSeed < 0) {
+					tempSeed *= -1;
+				}
+				sum += tempSeed;
+				randHouses[i] = tempSeed;
+			}
+			
+			int dif = totalSeeds - sum;
+			
+			//Debug: Display Difference
+			System.out.println("Diff: " + dif);
+			
+			//Check difference in totals
+			if(dif > 0) {
+				int min = 0;
+				for(int i = 0; i < randHouses.length; i++) {
+					if(randHouses[i] < randHouses[min]) {
+						min = i;
+					}
+				}
+				randHouses[min] += dif;
+			}
+			else if(dif < 0) {
+				int max = 0;
+				for(int i = 0; i < randHouses.length; i++) {
+					if(seeds == 1 && dif < 0 && randHouses[i] > 0) {
+						randHouses[i] -= 1;
+						dif += 1;
+					}
+					if(randHouses[i] > randHouses[max] && seeds != 1) {
+						max = i;
+					}
+				}
+				if(seeds != 1) {
+				randHouses[max] += dif;
+				}
+			}
+			
+			//Debug: Display Random Values
+			for(int i = 0; i < houses; i++) {
+				System.out.println(randHouses[i]);
+			}
+			
+			for(int i = 0; i < 2; i++) {
+				for(int j = 0; j < houses; j++) {
+					if(seeds == 1) {
+						board[i][j] = 1;
+					}
+					else {
+						board[i][j] = randHouses[j];
+					}
+				}
+			}
+		}
+		else {
+			for(int i = 0; i < 2; i++) {
+				for(int j = 0; j < houses; j++) {
+					board[i][j] = seeds;
+				}
 			}
 		}
 
@@ -79,6 +152,10 @@ public class Board {
 	public void StartGame(Player p0, Player p1) {
 		players[0] = p0;
 		players[1] = p1;
+
+		//player initiation
+		players[0] = new Player(0);
+		players[1] = new Player(1);
 
 		//begin the first turn
 		//This is incorrect, we need to check if there is a possible move!
@@ -121,8 +198,8 @@ public class Board {
 	}
 
 	public void getPlayerScores() {
-		System.out.print("Player 0: " + players[0].getScore() + "\n");
-		System.out.print("Player 1: " + players[1].getScore() + "\n");
+		System.out.print("Player " + players[0].getSide() + ": " + players[0].getScore() + "\n");
+		System.out.print("Player " + players[1].getSide() + ": " + players[1].getScore() + "\n");
 	}
 
 	/*
@@ -142,11 +219,11 @@ public class Board {
 			//Check if at the end of the row
 			if(indexTemp == houses) {
 				//Player 1 scores
-				if(playerturn == 0 && rowTemp == 0) {
+				if(row == rowTemp && row == 0) {
 					//Debug
 					//System.out.println("Player 0 Scores");
 					//score[0] += 1;
-					players[0].incrementScore();
+					players[row].incrementScore();
 					if(i == numMoves - 1) {
 						return true;
 					}
@@ -154,11 +231,12 @@ public class Board {
 					indexTemp = -1;
 				}
 				//Player 2 scores
-				else if(playerturn == 1 && rowTemp == 1) {
+				else if(row == 1 && rowTemp == row) {
 					//Debug
 					//System.out.println("Player 1 Scores");
-					score[1] += 1;
-					players[1].incrementScore();
+					//score[1] += 1;
+					System.out.println("Row: " + row + " Player: " + players[row].getSide());
+					players[row].incrementScore();
 					if(i == numMoves - 1) {
 						return true;
 					}
@@ -181,14 +259,14 @@ public class Board {
 			else {
 				board[rowTemp][indexTemp] += 1;
 				//Check if the last piece is deposited in an empty spot on the player's side
-				if(i == numMoves - 1 && board[rowTemp][indexTemp] == 1 && playerturn == rowTemp) {
+				if(i == numMoves - 1 && board[rowTemp][indexTemp] == 1 && row == rowTemp) {
 					if(rowTemp == 0) {
 						int addToScore = board[1][5 - indexTemp] + board[rowTemp][indexTemp];
 						board[1][5 - indexTemp] = 0;
 						board[rowTemp][indexTemp] = 0;
 
 						//score[0] += addToScore;
-						players[0].updateScoreWithInt(addToScore);
+						players[row].updateScoreWithInt(addToScore);
 					}
 					if(rowTemp == 1) {
 						int addToScore = board[0][5 - indexTemp] + board[rowTemp][indexTemp];
@@ -196,7 +274,7 @@ public class Board {
 						board[rowTemp][indexTemp] = 0;
 
 						//score[1] += addToScore;
-						players[1].updateScoreWithInt(addToScore);
+						players[row].updateScoreWithInt(addToScore);
 					}
 				}
 			}
@@ -299,7 +377,10 @@ public class Board {
 					//int tempScore = score[0]; // swap the scores
 					//score[0] = score[1];
 					//score[1] = tempScore;
-
+					
+					int tempScore = players[0].getScore();
+					players[0].score = players[1].getScore();
+					players[1].score = tempScore;
 					plr = 1;
 					playerturn = 0;
 					switchOn = true;

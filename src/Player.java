@@ -5,27 +5,41 @@ public class Player {
 	boolean consoleInput;
 	int numTurnsHasTaken;
 	int score;
+	int side;
 	
 	/*
 	 * default constructor
 	 */
-	public Player() {
+	public Player(int defSide) {
 		consoleInput = true;
 		numTurnsHasTaken = 0;
 		score = 0;
+		side = defSide;
 	}
 
 	
 	/*
 	 * construct player with client handler
 	 */
-	public Player(Server.ClientHandler ch) {
+	public Player(Server.ClientHandler ch, int defSide) {
 		clientHandler = ch;
 		consoleInput = false;
+		numTurnsHasTaken = 0;
+		score = 0;
+		side = defSide;
 	}
 
 	public int getNumTurns() {
 		return numTurnsHasTaken;
+	}
+	
+	public int getSide() {
+		return side;
+	}
+	
+	public void setSide(int newSide) {
+		side = newSide;
+		return;
 	}
 
 	public int getScore() {
