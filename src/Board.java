@@ -53,7 +53,7 @@ public class Board {
 			
 			//Generate an array of random values along a normal distribution
 			for(int i = 0; i < houses; i++) {
-				if(seeds <= 2) {
+				if(seeds == 2) {
 					range = 1;
 				}
 				double randDouble = generator.nextGaussian() * range + seeds;
@@ -103,7 +103,12 @@ public class Board {
 			
 			for(int i = 0; i < 2; i++) {
 				for(int j = 0; j < houses; j++) {
+					if(seeds == 1) {
+						board[i][j] = 1;
+					}
+					else {
 						board[i][j] = randHouses[j];
+					}
 				}
 			}
 		}
