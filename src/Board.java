@@ -331,12 +331,12 @@ public class Board {
 			} // End Pie Rule
 			System.out.println("Player " + playerturn);
 
-			move = players[plr].getMove();
+			move = players[plr].getMove(0);
 
 			// Check for Out of Bounds
 			while(move < 0 || move > 5) {
 				System.out.println("Index out of bounds. Try again.");
-				move = players[plr].getMove();
+				move = players[plr].getMove(0);
 			}
 
 			// Now figure out possible moves for this player
@@ -346,12 +346,12 @@ public class Board {
 			if(plr == 0) { // this player can only access the 0th row
 				while(possibleMoves[plr][move] == 0) { // player picked a house with empty stones
 					System.out.println("Cannot pick empty house! Try again.");
-					move = players[plr].getMove();
+					move = players[plr].getMove(0);
 				}
 			} else {
 				while(possibleMoves[plr][move] == 0) { // player picked a house with empty stones
 					System.out.println("Cannot pick empty house! Try again.");
-					move = players[plr].getMove();
+					move = players[plr].getMove(0);
 				}
 			}
 		} while( Move(plr, move) );
