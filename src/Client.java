@@ -28,11 +28,31 @@ public class Client {
         out.println("READY");
         
         while((inputLine = in.readLine()) != null) {
+        	//parse through input line and create board information
+        	String tokens[] = inputLine.split(" ");
+        	
+        	//check for different cases
         	System.out.println(inputLine);
+        	switch(tokens[0].charAt(0)){
+        	case '1':	//standard get move
+        		System.out.println("Enter Move:");
+        		break;
+        	case '2':	//pie rule request
+        		System.out.println("PIE Request Rule:");
+        		break;
+        	case '3':	//game end message
+        		break;
+        	}
+        	if(tokens[0] == "1") { //standard get move
+        		
+        	}else { //pie rule
+        		
+        	}
         	
         	String resp = scanObj.nextLine();
+        	
         	if(resp.length() > 0) {
-        		out.println(scanObj.nextLine()); //response
+        		out.println(resp); //response
         	}
         }
     }

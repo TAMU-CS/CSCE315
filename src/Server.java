@@ -24,6 +24,7 @@ public class Server {
         
         //loop through client handlers and set up their sockets
         while (true) {
+            System.out.println("Player " + tid + " Joined!");
         	ClientHandler ch;
         	ch = new ClientHandler(serverSocket.accept(), tid, this);        	
         	Player plr = new Player(ch);
@@ -31,9 +32,6 @@ public class Server {
     		ch.setPlr(plr);
         	ch.run();
             tid++;
-            
-            //print that a player has joined
-            System.out.println("Player Has Joined: " + tid);
         }
     }
     
@@ -80,7 +78,7 @@ public class Server {
 				out.println("BoardConfigurations");
 				
 				//user responds with ready
-	            //String inputLine = in.readLine();
+	            String inputLine = in.readLine();
 
 	            //update player status
 	            server.plrJoin[id] = true;
@@ -101,12 +99,16 @@ public class Server {
 
     	}
     	
-    	public int getMove(int timeForMove) {
+    	public int getMove(int timeForMove, int opt) {
     		//call read line from in buffer
     		try {
-    			out.println("Your Move:");
+    			out.println(
+    					opt + " " +
+    					server.board.toString()
+    				);
+    	
     			String inputLine = in.readLine();
-        		return Integer.parseInt(inputLine);
+        		return Integer.parseInt(inputLine);    				
     		}catch(IOException e) {
     			e.printStackTrace();
     		}

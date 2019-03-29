@@ -194,9 +194,10 @@ public class Board {
 	public int[][] GetMoves(int plr) {
 		//player 1 has control over left half
 		//player 2 has control over right half
-		int [][] moves = new int[2][6];
+		int length = board[0].length;
+		int [][] moves = new int[2][length];
 		int oplr = (plr == 1) ? 0 : 1;
-		for(int i = 0; i < 6; i++){
+		for(int i = 0; i < length; i++){
 			moves[plr][i] = 1;
 			moves[oplr][i] = 0;
 
@@ -209,6 +210,21 @@ public class Board {
 		return moves;
 	}
 
+	/*
+	 * Check Move returns true if valid move or false if not valid move
+	 */
+	public boolean CheckMove(int plr, int move) {
+		//check that the move is within bounds
+		if(move < board[0].length && move >= 0) {
+			int moveBoard[][] = GetMoves(plr);
+			
+			//check if the move is a legal move 
+			return moveBoard[plr][move] == 1;
+		}
+		
+		return false;
+	}
+	
 	/*
 	 * NextTurn function queries player to return with input for the player
 	 */
@@ -252,7 +268,11 @@ public class Board {
 //					choice = scanObj.nextInt();
 //				}
 				
-				int choice = players[playerturn].getMove(0);
+				int choice = players[playerturn].getMove(0, 2);
+				while(!(choice == 1 || choice == 2)){
+					System.out.println("Invalid Pie Rule Input:");
+					choice = players[playerturn].getMove(0, 2);					
+				}
 
 				if(choice == 2) { // Player 2 chooses to swap
 					Player playerTemp = players[0];
@@ -270,28 +290,21 @@ public class Board {
 			} // End Pie Rule
 			System.out.println("Player " + playerturn);
 
-			move = players[plr].getMove(timeToMove);
+			move = players[plr].getMove(timeToMove, 1);
 
 			// Check for Out of Bounds
 			while(move < 0 || move > 5) {
 				System.out.println("Index out of bounds. Try again.");
-				move = players[plr].getMove(timeToMove);
+				move = players[plr].getMove(timeToMove, 1);
 			}
 
 			// Now figure out possible moves for this player
 			int[][] possibleMoves = GetMoves(plr);
 
 			// Now check if player picked a valid house (house must have stones in it)
-			if(plr == 0) { // this player can only access the 0th row
-				while(possibleMoves[plr][move] == 0) { // player picked a house with empty stones
-					System.out.println("Cannot pick empty house! Try again.");
-					move = players[plr].getMove(timeToMove);
-				}
-			} else {
-				while(possibleMoves[plr][move] == 0) { // player picked a house with empty stones
-					System.out.println("Cannot pick empty house! Try again.");
-					move = players[plr].getMove(timeToMove);
-				}
+			while(possibleMoves[plr][move] == 0) { // player picked a house with empty stones
+				System.out.println("Cannot pick empty house! Try again.");
+				move = players[plr].getMove(timeToMove, 1);
 			}
 		} while( Move(plr, move) );
 
@@ -319,6 +332,20 @@ public class Board {
 		return true;
 	}
 
+	/*
+	 * Stringify functions allows for board info to be passed between buffers
+	 */
+	public String toString() {
+		String resp = board[0].length + " ";
+		
+		for(int i = 0; i < 2; i++) {
+			for(int j = 0; j < board[i].length; j++) {
+				resp += board[i][j] + " ";
+			}
+		}
+		
+		return resp + players[0].getScore() + " " + players[1].getScore();
+	}
 
 	/*
 	 * Main, runs board
