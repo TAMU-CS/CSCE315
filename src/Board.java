@@ -6,8 +6,9 @@ public class Board {
 
 	//board data structure, 2x6 board to represent houses for seeds
 	private int[][] board; // = new int[2][6];
-	private int houses;
-	private int seeds;
+	int houses;
+	int seeds;
+	int timeToMove;
 
 	//score datastructure for keep track of scores
 	private int[] score = new int[2];
@@ -21,10 +22,27 @@ public class Board {
 	boolean switchOn = false;
 
 	/*
-	 * Default constructor, initiates an empty kalah board with players
+	 * constructor that takes in stringified version and creates from there
+	 * used for client
 	 */
-	public Board(int numHouses, int numSeeds, Boolean rando) {
-		System.out.println(rando);
+	public Board(String tokens[]) {
+		//read in length
+		int length = Integer.parseInt(tokens[1]);
+		board = new int[2][length];
+		houses = length;
+
+		for(int i = 0; i < 2; i++) {
+			for(int j = 0; j < length; j++) {
+				board[i][j] = Integer.parseInt(tokens[2 + i * length + j]);
+			}
+		}
+	}
+
+	/*
+	 * constructor, initiates kalah board and all other values associated with the board
+	 */
+	public Board(int numHouses, int numSeeds, Boolean random, int timeForMoves) {
+		timeToMove = timeForMoves;
 		if(numHouses > 3 && numHouses < 10) {
 			board = new int[2][numHouses];
 			houses = numHouses;
@@ -42,7 +60,7 @@ public class Board {
 			seeds = 4;
 		}
 
-		if(rando == true) {
+		if(random == true) {
 			//System.out.println("Debug");
 			int totalSeeds = seeds * houses;
 			int sum = 0;
@@ -126,6 +144,14 @@ public class Board {
 
 		//player turn is set to player 1 by default
 		playerturn = 0;
+	}
+
+	/*
+	 * StartGame is the main game loop where it players through the game logic
+	 */
+	public void StartGame(Player p0, Player p1) {
+		players[0] = p0;
+		players[1] = p1;
 
 		//player initiation
 		players[0] = new Player(0);
@@ -263,9 +289,10 @@ public class Board {
 	public int[][] GetMoves(int plr) {
 		//player 1 has control over left half
 		//player 2 has control over right half
-		int [][] moves = new int[2][6];
+		int length = board[0].length;
+		int [][] moves = new int[2][length];
 		int oplr = (plr == 1) ? 0 : 1;
-		for(int i = 0; i < 6; i++){
+		for(int i = 0; i < length; i++){
 			moves[plr][i] = 1;
 			moves[oplr][i] = 0;
 
@@ -276,6 +303,21 @@ public class Board {
 		}
 
 		return moves;
+	}
+
+	/*
+	 * Check Move returns true if valid move or false if not valid move
+	 */
+	public boolean CheckMove(int plr, int move) {
+		//check that the move is within bounds
+		if(move < board[0].length && move >= 0) {
+			int moveBoard[][] = GetMoves(plr);
+
+			//check if the move is a legal move
+			return moveBoard[plr][move] == 1;
+		}
+
+		return false;
 	}
 
 	/*
@@ -313,12 +355,18 @@ public class Board {
 				System.out.println("2. Swap places with Player 1");
 				System.out.print("Enter your choice: ");
 
-				Scanner scanObj = new Scanner(System.in);
+//				Scanner scanObj = new Scanner(System.in);
+//
+//				int choice = scanObj.nextInt();
+//				while(choice < 1 || choice > 2) {
+//					System.out.print("Enter a valid choice: ");
+//					choice = scanObj.nextInt();
+//				}
 
-				int choice = scanObj.nextInt();
-				while(choice < 1 || choice > 2) {
-					System.out.print("Enter a valid choice: ");
-					choice = scanObj.nextInt();
+				int choice = players[playerturn].getMove(0, 2);
+				while(!(choice == 1 || choice == 2)){
+					System.out.println("Invalid Pie Rule Input:");
+					choice = players[playerturn].getMove(0, 2);
 				}
 
 				if(choice == 2) { // Player 2 chooses to swap
@@ -343,44 +391,25 @@ public class Board {
 			} // End Pie Rule
 			System.out.println("Player " + playerturn);
 
-			move = players[plr].getMove(0);
+			move = players[plr].getMove(timeToMove, 1);
 
 			// Check for Out of Bounds
 			while(move < 0 || move > 5) {
 				System.out.println("Index out of bounds. Try again.");
-				move = players[plr].getMove(0);
+				move = players[plr].getMove(timeToMove, 1);
 			}
 
 			// Now figure out possible moves for this player
 			int[][] possibleMoves = GetMoves(plr);
 
 			// Now check if player picked a valid house (house must have stones in it)
-			if(plr == 0) { // this player can only access the 0th row
-				while(possibleMoves[plr][move] == 0) { // player picked a house with empty stones
-					System.out.println("Cannot pick empty house! Try again.");
-					move = players[plr].getMove(0);
-				}
-			} else {
-				while(possibleMoves[plr][move] == 0) { // player picked a house with empty stones
-					System.out.println("Cannot pick empty house! Try again.");
-					move = players[plr].getMove(0);
-				}
+			while(possibleMoves[plr][move] == 0) { // player picked a house with empty stones
+				System.out.println("Cannot pick empty house! Try again.");
+				move = players[plr].getMove(timeToMove, 1);
 			}
 		} while( Move(plr, move) );
 
 		playerturn = (playerturn == 1) ? 0 : 1;
-	}
-
-	/*
-	 * Main, runs board
-	 */
-	public static void main(String[] args) {
-		Scanner newObj = new Scanner(System.in);
-		System.out.println("Enter # of houses, # of seeds, and if random");
-		int houseIn = newObj.nextInt();
-		int seedsIn = newObj.nextInt();
-		Boolean randIn = newObj.nextBoolean();
-		Board board = new Board(houseIn, seedsIn, randIn);
 	}
 
 	/*
@@ -402,6 +431,33 @@ public class Board {
 		System.out.println("Endgame");
 
 		return true;
+	}
+
+	/*
+	 * Stringify functions allows for board info to be passed between buffers
+	 */
+	public String toString() {
+		String resp = board[0].length + " ";
+
+		for(int i = 0; i < 2; i++) {
+			for(int j = 0; j < board[i].length; j++) {
+				resp += board[i][j] + " ";
+			}
+		}
+
+		return resp + players[0].getScore() + " " + players[1].getScore();
+	}
+
+	/*
+	 * Main, runs board
+	 */
+	public static void main(String[] args) {
+		Scanner newObj = new Scanner(System.in);
+		System.out.println("Enter # of houses, # of seeds, and if random");
+		int houseIn = newObj.nextInt();
+		int seedsIn = newObj.nextInt();
+		Boolean randIn = newObj.hasNextShort();
+		Board board = new Board(houseIn, seedsIn, randIn, 0);
 	}
 
 }

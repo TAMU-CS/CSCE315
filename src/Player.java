@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 public class Player {
 	Server.ClientHandler clientHandler;
-	boolean serversided;
+	boolean consoleInput;
 	int numTurnsHasTaken;
 	int score;
 	int side;
@@ -11,7 +11,7 @@ public class Player {
 	 * default constructor
 	 */
 	public Player(int defSide) {
-		serversided = true;
+		consoleInput = true;
 		numTurnsHasTaken = 0;
 		score = 0;
 		side = defSide;
@@ -23,7 +23,7 @@ public class Player {
 	 */
 	public Player(Server.ClientHandler ch, int defSide) {
 		clientHandler = ch;
-		serversided = false;
+		consoleInput = false;
 		numTurnsHasTaken = 0;
 		score = 0;
 		side = defSide;
@@ -58,14 +58,26 @@ public class Player {
 	 * GetMove, returns the i, j position of the mancala house
 	 * the player attempts to move
 	 */
-	public int getMove(int timeForMove) {
+	public int getMove(int timeForMove, int opt) {
+		//opt = 1 means standard get move
+		//opt = 2 means pie rule request
+		
 		numTurnsHasTaken++;
-		if(serversided) {
-			Scanner scanObj = new Scanner(System.in);
-			System.out.println("Enter index of your houses:");
-			return scanObj.nextInt();
+		if(consoleInput) {
+			if(opt == 1) {
+				//keep iterating till legal move
+				
+				Scanner scanObj = new Scanner(System.in);
+				System.out.println("Enter index of your houses:");
+				return scanObj.nextInt();
+			}else if(opt == 2) {
+				Scanner scanObj = new Scanner(System.in);
+				System.out.println("Enter option for pie rule: ");
+				return scanObj.nextInt();				
+			}
+			return 0;
 		}else {
-			return clientHandler.getMove(timeForMove);
+			return clientHandler.getMove(timeForMove, opt);
 		}
 	}
 }
