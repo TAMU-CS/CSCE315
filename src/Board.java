@@ -49,6 +49,9 @@ public class Board {
 			int tempSeed;
 			int range = 2;
 			int[] randHouses = new int[houses];
+			for(int i = 0; i < houses; i++) {
+				randHouses[i] = 1;
+			}
 			Random generator = new Random();
 			
 			//Generate an array of random values along a normal distribution
@@ -56,16 +59,16 @@ public class Board {
 				if(seeds == 2) {
 					range = 1;
 				}
-				double randDouble = generator.nextGaussian() * range + seeds;
+				double randDouble = generator.nextGaussian() * range + seeds -  1;
 				tempSeed = (int) Math.round(randDouble);
 				if(tempSeed < 0) {
 					tempSeed *= -1;
 				}
 				sum += tempSeed;
-				randHouses[i] = tempSeed;
+				randHouses[i] += tempSeed;
 			}
 			
-			int dif = totalSeeds - sum;
+			int dif = (totalSeeds - houses) - sum;
 			
 			//Debug: Display Difference
 			System.out.println("Diff: " + dif);
