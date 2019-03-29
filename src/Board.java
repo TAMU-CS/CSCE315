@@ -66,6 +66,11 @@ public class Board {
 				}
 				sum += tempSeed;
 				randHouses[i] += tempSeed;
+				if(randHouses[i] > 10 ) {
+					int tenDif = randHouses[i] - 10;
+					randHouses[i] -= tenDif;
+					sum -= tenDif;
+				}
 			}
 			
 			int dif = (totalSeeds - houses) - sum;
@@ -268,7 +273,7 @@ public class Board {
 		//player 2 has control over right half
 		int [][] moves = new int[2][6];
 		int oplr = (plr == 1) ? 0 : 1;
-		for(int i = 0; i < 6; i++){
+		for(int i = 0; i < houses; i++){
 			moves[plr][i] = 1;
 			moves[oplr][i] = 0;
 
