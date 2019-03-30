@@ -37,7 +37,7 @@ public class Server {
     
     public void initGame() {
     	//create the player objects
-    	board.StartGame(players[0], players[1], false);
+    	board.StartGame(players[0], players[1]);
     }
 
     public void stop() throws IOException {

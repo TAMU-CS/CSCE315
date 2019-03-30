@@ -14,6 +14,7 @@ public class Player {
 	 */
 	public Player(int defSide, boolean type) {
 		numTurnsHasTaken = 0;
+		consoleInput = true;
 		score = 0;
 		side = defSide;
 		ai = type;

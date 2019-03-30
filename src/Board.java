@@ -165,13 +165,13 @@ public class Board {
 	/*
 	 * StartGame is the main game loop where it players through the game logic
 	 */
-	public void StartGame(Player p0, Player p1, Boolean AI) {
+	public void StartGame(Player p0, Player p1) {
 		players[0] = p0;
 		players[1] = p1;
 
 		//player initiation
-		players[0] = new Player(0, false);
-		players[1] = new Player(1, AI);
+		//players[0] = new Player(0, false);
+		//players[1] = new Player(1, AI);
 
 		//begin the first turn
 		//This is incorrect, we need to check if there is a possible move!
@@ -450,12 +450,12 @@ public class Board {
 //					System.out.print("Enter a valid choice: ");
 //					choice = scanObj.nextInt();
 //				}
-
-				int choice = players[playerturn].getMove(0, 2);
+				int choice;
 				if(players[1].isAi()) {
 					choice = AImove(true, plr);
 				}
 				else {
+				choice = players[playerturn].getMove(0, 2);
 				while(!(choice == 1 || choice == 2)){
 					System.out.println("Invalid Pie Rule Input:");
 					choice = players[playerturn].getMove(0, 2);
@@ -597,6 +597,9 @@ public class Board {
 		Boolean randIn = newObj.nextBoolean();
 		Boolean AIin = newObj.nextBoolean();
 		Board board = new Board(houseIn, seedsIn, randIn, 0 ,  AIin);
+		Player p0 = new Player(0, false);
+		Player p1 = new Player(1, AIin);
+		board.StartGame(p0, p1);
 	}
 
 }

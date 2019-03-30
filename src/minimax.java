@@ -1,6 +1,6 @@
 import java.util.*;
 
-public int miniMax(int depth, boolean isMaximizingPlayer, int playerturn, int[][] boardState) {
+/*public int miniMax(int depth, boolean isMaximizingPlayer, int playerturn, int[][] boardState) {
   // Get possible next moves
   int[][] nextMoves = GetMoves(playerturn);
 
@@ -36,4 +36,4 @@ public int miniMax(int depth, boolean isMaximizingPlayer, int playerturn, int[][
     }
   }
   return new int[] {bestScore, bestRow, bestCol};
-}
+}*/
