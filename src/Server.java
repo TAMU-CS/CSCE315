@@ -27,7 +27,7 @@ public class Server {
             System.out.println("Player " + tid + " Joined!");
         	ClientHandler ch;
         	ch = new ClientHandler(serverSocket.accept(), tid, this);        	
-        	Player plr = new Player(ch, tid);
+        	Player plr = new Player(ch, tid, false);
         	players[tid] = plr;
     		ch.setPlr(plr);
         	ch.run();
@@ -37,7 +37,7 @@ public class Server {
     
     public void initGame() {
     	//create the player objects
-    	board.StartGame(players[0], players[1]);
+    	board.StartGame(players[0], players[1], false);
     }
 
     public void stop() throws IOException {
@@ -159,7 +159,7 @@ public class Server {
     	//create player objects
     	
     	//create board
-    	Board board = new Board(6, 4, false, 0);
+    	Board board = new Board(6, 4, false, 0, false);
     	//new Board(housesPerRow, seedsPerHouse, randomizeSeeds);
     	
     	//set up server object

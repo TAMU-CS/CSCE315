@@ -26,7 +26,7 @@ public class Client {
     	String confTokens[] = inputLine.split(" ");
 
         //create player object
-        plr = new Player(Integer.parseInt(confTokens[4]));  
+        plr = new Player(Integer.parseInt(confTokens[4]), false);  
         System.out.println("Hello Player " + plr.side + "!");
         
         //3. acknowledge that input was received
@@ -45,7 +45,7 @@ public class Client {
     		int opt = Integer.parseInt(tokens[0]);
         	if(opt == 1 || opt == 2) {
         		int oplrId = plr.side == 1 ? 0 : 1;
-        		oplr = new Player(oplrId);
+        		oplr = new Player(oplrId,false);
         		board = new Board(tokens);
         		System.out.println("Board State:");
         		board.printBoard();
