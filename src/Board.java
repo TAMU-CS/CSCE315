@@ -6,6 +6,7 @@ public class Board {
 
 	//board data structure, 2x6 board to represent houses for seeds
 	private int[][] board; // = new int[2][6];
+	private int psuedoScore;
 	private int houses;
 	private int seeds;
 
@@ -23,8 +24,8 @@ public class Board {
 	/*
 	 * Default constructor, initiates an empty kalah board with players
 	 */
-	public Board(int numHouses, int numSeeds, Boolean rando) {
-		System.out.println(rando);
+	public Board(int numHouses, int numSeeds, Boolean rando, Boolean AI) {
+		//System.out.println(rando);
 		if(numHouses > 3 && numHouses < 10) {
 			board = new int[2][numHouses];
 			houses = numHouses;
@@ -76,7 +77,7 @@ public class Board {
 			int dif = (totalSeeds - houses) - sum;
 			
 			//Debug: Display Difference
-			System.out.println("Diff: " + dif);
+			//System.out.println("Diff: " + dif);
 			
 			//Check difference in totals
 			if(dif > 0) {
@@ -105,9 +106,9 @@ public class Board {
 			}
 			
 			//Debug: Display Random Values
-			for(int i = 0; i < houses; i++) {
-				System.out.println(randHouses[i]);
-			}
+			//for(int i = 0; i < houses; i++) {
+				//System.out.println(randHouses[i]);
+			//}
 			
 			for(int i = 0; i < 2; i++) {
 				for(int j = 0; j < houses; j++) {
@@ -136,8 +137,8 @@ public class Board {
 		playerturn = 0;
 
 		//player initiation
-		players[0] = new Player(0);
-		players[1] = new Player(1);
+		players[0] = new Player(0, false);
+		players[1] = new Player(1, AI);
 
 		//begin the first turn
 		//This is incorrect, we need to check if there is a possible move!
@@ -189,10 +190,30 @@ public class Board {
 	 * tries to move that house. Return false if unsuccessful,
 	 * true otherwise
 	 */
-	public boolean Move(int row, int index) {
+	public boolean Move(int row, int index, boolean aiCheck) {
 		//Setup temporary variables
-		int numMoves = board[row][index];
-		board[row][index] = 0;
+		int[][] tempBoard = new int[2][houses];
+		for(int i = 0; i < 2; i++) {
+			for(int j = 0; j < houses; j ++) {
+				tempBoard[i][j] = board[i][j];
+				//System.out.print(tempBoard[i][j]);
+			}
+			//System.out.println();
+		}
+		for(int i = 0; i < 2; i++) {
+			for(int j = 0; j < houses; j++) {
+				if(i == 0) {
+					//System.out.print(tempBoard[1][houses - j]);
+				}
+				if(i == 1) {
+					//System.out.print(tempBoard[0][j]);
+				}
+			}
+			//System.out.println();
+		}
+		psuedoScore = 0;
+		int numMoves = tempBoard[row][index];
+		tempBoard[row][index] = 0;
 		int indexTemp = index;
 		int rowTemp = row;
 
@@ -205,9 +226,25 @@ public class Board {
 					//Debug
 					//System.out.println("Player 0 Scores");
 					//score[0] += 1;
-					players[row].incrementScore();
+					if(!aiCheck) {
+						players[row].incrementScore();
+					}
+					else {
+						psuedoScore += 1;
+					}
 					if(i == numMoves - 1) {
-						return true;
+						//System.out.println("Bad 1");
+						if(!aiCheck) {
+							for(int k = 0; k < 2; k++) {
+								for(int l = 0; l < houses; l ++) {
+									board[k][l] = tempBoard[k][l];
+								}
+							}
+							return true;
+						}
+						else {
+							return true;
+						}
 					}
 					rowTemp = 1;
 					indexTemp = -1;
@@ -217,47 +254,83 @@ public class Board {
 					//Debug
 					//System.out.println("Player 1 Scores");
 					//score[1] += 1;
-					System.out.println("Row: " + row + " Player: " + players[row].getSide());
-					players[row].incrementScore();
-					if(i == numMoves - 1) {
-						return true;
+					//System.out.println("Row: " + row + " Player: " + players[row].getSide());
+					if(!aiCheck) {
+						players[row].incrementScore();
+					}
+					else {
+						psuedoScore += 1;
+					}
+					if(i == numMoves - 1 ) {
+						//System.out.println("Bad 2");
+						if(!aiCheck) {
+							for(int k = 0; k < 2; k++) {
+								for(int l = 0; l < houses; l ++) {
+									board[k][l] = tempBoard[k][l];
+								}
+							}
+							return true;
+						}
+						else {
+							return true;
+						}
 					}
 					rowTemp = 0;
 					indexTemp = -1;
 				}
 				//Player 1 moves from side 2 to side 1
 				else if(rowTemp == 0) {
-					board[1][0] += 1;
+					tempBoard[1][0] += 1;
 					rowTemp = 1;
 					indexTemp = -1;
 				}
 				//Player 2 moves from side 1 to side 2
 				else {
-					board[0][0] += 1;
+					tempBoard[0][0] += 1;
 					rowTemp = 0;
 					indexTemp = -1;
 				}
 			}
 			else {
-				board[rowTemp][indexTemp] += 1;
+				tempBoard[rowTemp][indexTemp] += 1;
 				//Check if the last piece is deposited in an empty spot on the player's side
-				if(i == numMoves - 1 && board[rowTemp][indexTemp] == 1 && row == rowTemp) {
+				if(i == numMoves - 1 && tempBoard[rowTemp][indexTemp] == 1 && row == rowTemp) {
 					if(rowTemp == 0) {
-						int addToScore = board[1][5 - indexTemp] + board[rowTemp][indexTemp];
-						board[1][5 - indexTemp] = 0;
-						board[rowTemp][indexTemp] = 0;
+						int addToScore = tempBoard[1][5 - indexTemp] + tempBoard[rowTemp][indexTemp];
+						tempBoard[1][5 - indexTemp] = 0;
+						tempBoard[rowTemp][indexTemp] = 0;
 
 						//score[0] += addToScore;
-						players[row].updateScoreWithInt(addToScore);
+						if(!aiCheck) {
+							players[row].updateScoreWithInt(addToScore);
+						}
+						else {
+							psuedoScore += addToScore;
+						}
 					}
 					if(rowTemp == 1) {
-						int addToScore = board[0][5 - indexTemp] + board[rowTemp][indexTemp];
-						board[0][5 - indexTemp] = 0;
-						board[rowTemp][indexTemp] = 0;
+						int addToScore = tempBoard[0][5 - indexTemp] + tempBoard[rowTemp][indexTemp];
+						tempBoard[0][5 - indexTemp] = 0;
+						tempBoard[rowTemp][indexTemp] = 0;
 
 						//score[1] += addToScore;
-						players[row].updateScoreWithInt(addToScore);
+						if(!aiCheck) {
+							players[row].updateScoreWithInt(addToScore);
+						}
+						else {
+							psuedoScore += addToScore;
+						}
 					}
+				}
+			}
+		}
+		if(aiCheck) {
+			psuedoScore += 0;
+		}
+		else {
+			for(int k = 0; k < 2; k++) {
+				for(int l = 0; l < houses; l ++) {
+					board[k][l] = tempBoard[k][l];
 				}
 			}
 		}
@@ -323,7 +396,13 @@ public class Board {
 
 				Scanner scanObj = new Scanner(System.in);
 
-				int choice = scanObj.nextInt();
+				int choice;
+				if(players[1].isAi()) {
+					choice = AImove(true, plr);
+				}
+				else {
+					choice = scanObj.nextInt();
+				}
 				while(choice < 1 || choice > 2) {
 					System.out.print("Enter a valid choice: ");
 					choice = scanObj.nextInt();
@@ -348,10 +427,15 @@ public class Board {
 			} // End Pie Rule
 			System.out.println("Player " + playerturn);
 
-			move = players[plr].getMove(0);
-
+			if(players[plr].isAi()) {
+				//System.out.println("Correct");
+				move = AImove(false, plr);
+			}
+			else {
+				move = players[plr].getMove(0);
+			}
 			// Check for Out of Bounds
-			while(move < 0 || move > 5) {
+			while(move < 0 || move > houses) {
 				System.out.println("Index out of bounds. Try again.");
 				move = players[plr].getMove(0);
 			}
@@ -371,8 +455,9 @@ public class Board {
 					move = players[plr].getMove(0);
 				}
 			}
-		} while( Move(plr, move) );
+		} while( Move(plr, move, false) );
 
+		//System.out.println("Next Turn");
 		playerturn = (playerturn == 1) ? 0 : 1;
 	}
 
@@ -381,11 +466,12 @@ public class Board {
 	 */
 	public static void main(String[] args) {
 		Scanner newObj = new Scanner(System.in);
-		System.out.println("Enter # of houses, # of seeds, and if random");
+		System.out.println("Enter # of houses, # of seeds, if random, and if AI");
 		int houseIn = newObj.nextInt();
 		int seedsIn = newObj.nextInt();
 		Boolean randIn = newObj.nextBoolean();
-		Board board = new Board(houseIn, seedsIn, randIn);
+		Boolean AIin = newObj.nextBoolean();
+		Board board = new Board(houseIn, seedsIn, randIn, AIin);
 	}
 
 	/*
@@ -408,5 +494,42 @@ public class Board {
 
 		return true;
 	}
+	
+	
+	public int AImove(Boolean pie, int plrNum) {
+		if(pie) {
+			if(players[0].getScore() > 1) {
+				System.out.println("AI: 2");
+				return 2;
+			}
+			else {
+				System.out.println("AI: 1");
+				return 1;
+			}
+		}
+		else {
+			players[plrNum].numTurnsHasTaken += 1;
+			int[] moves = new int[houses];
+			boolean extraTurn;
+			for(int i = 0; i < houses; i++) {
+				extraTurn = Move(plrNum, i, true);
+				if(extraTurn) {
+					moves[i] = 5 + psuedoScore;
+				}
+				else {
+					moves[i] = psuedoScore;
+				}
+			}
+			int maxIndex = 0;
+			for(int i = 0; i < houses; i++) {
+				if(moves[i] > moves[maxIndex]) {
+					maxIndex = i;
+				}
+			}
+			System.out.println("AI: " + maxIndex);
+			return maxIndex;
+		}
+	}
+	
 
 }
