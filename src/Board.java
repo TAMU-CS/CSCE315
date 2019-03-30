@@ -16,7 +16,7 @@ public class Board {
 	private int playerturn;
 
 	//player objects, correspond with their score index
-	private Player[] players = new Player[2];
+	Player[] players = new Player[2];
 
 	// Flag that keeps track if Player 2 chose Pie Rule
 	boolean switchOn = false;
@@ -25,7 +25,7 @@ public class Board {
 	 * constructor that takes in stringified version and creates from there
 	 * used for client
 	 */
-	public Board(String tokens[]) {
+	public Board(String tokens[], Player p0, Player p1) {
 		//read in length
 		int length = Integer.parseInt(tokens[1]);
 		board = new int[2][length];
@@ -35,7 +35,35 @@ public class Board {
 			for(int j = 0; j < length; j++) {
 				board[i][j] = Integer.parseInt(tokens[2 + i * length + j]);
 			}
-		}		
+		}
+
+		//handle players setup
+		int plr0 = Integer.parseInt(tokens[2 + length * 2]);
+		int plr1 = Integer.parseInt(tokens[4 + length * 2]);
+		
+		//set up players array
+		if(plr0 == 0) { //sides were not flipped
+			if(p0.side == 0) {
+				players[0] = p0;
+				players[1] = p1;
+			}else {
+				players[0] = p1;
+				players[1] = p0;
+			}
+		}else { //sides were flipped
+			if(p0.side == 1) {
+				players[0] = p0;
+				players[1] = p1;
+			}else {
+				players[0] = p1;
+				players[1] = p0;
+			}			
+		}
+		
+		
+		//set the scores of players
+		players[0].score = Integer.parseInt(tokens[3 + length * 2]);
+		players[1].score = Integer.parseInt(tokens[5 + length * 2]);
 	}
 	
 	/*
@@ -172,7 +200,11 @@ public class Board {
 			System.out.println("Player 1 won!");
 		}else {
 			System.out.println("TIE!");
-		}		
+		}
+		
+		//trigger clients to notify them
+		players[0].getMove(0, 3);
+		players[1].getMove(0, 3);
 	}
 
 	/*
@@ -438,7 +470,8 @@ public class Board {
 			}
 		}
 		
-		return resp + players[0].getScore() + " " + players[1].getScore();
+		return resp + players[0].getSide() + " " + players[0].getScore() + " " + 
+			players[1].getSide() + " " + players[1].getScore();
 	}
 
 	/*
