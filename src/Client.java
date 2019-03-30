@@ -44,11 +44,26 @@ public class Client {
     		Board board;
     		int opt = Integer.parseInt(tokens[0]);
         	if(opt == 1 || opt == 2) {
+         		//initiate other players
+        		//LAST ERROR, this portion was unresponsive!
         		int oplrId = plr.side == 1 ? 0 : 1;
-        		oplr = new Player(oplrId,false);
-        		board = new Board(tokens);
-        		System.out.println("Board State:");
+
+        		oplr = new Player(oplrId, false);
+        		
+        	    //initiate board
+        		board = new Board(tokens, plr, oplr);
+        		   
+        		//print board state
+        		System.out.println("\n\nBoard State:");
+
         		board.printBoard();
+        		board.getPlayerScores();
+        	}else if(opt == 3) { //game ended
+        		//display the winner
+        		System.out.println("Winner: ");
+        		System.out.println(inputLine);
+        		
+        		break;
         	}
         	
         	String resp = plr.getMove(0, opt) + "";

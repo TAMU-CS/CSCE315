@@ -107,13 +107,32 @@ public class Server {
     	public int getMove(int timeForMove, int opt) {
     		//call read line from in buffer
     		try {
-    			out.println(
-    					opt + " " +
-    					server.board.toString()
-    				);
-    	
-    			String inputLine = in.readLine();
-        		return Integer.parseInt(inputLine);    				
+    			if(opt == 1 || opt == 2) {
+    				System.out.println("Requestion plr move...");
+	    			
+	    			out.println(
+	    					opt + " " +
+	    					server.board.toString()
+	    				);
+	    	
+	    			String inputLine = in.readLine();
+	        		return Integer.parseInt(inputLine);    				
+    			}else if(opt == 3) {
+    				System.out.println("Notifying player of winner");
+    				int winCode = -1;
+    				if(server.board.players[0].score > server.board.players[1].score) {
+    					winCode = server.board.players[0].side;
+    				}else if(server.board.players[1].score > server.board.players[0].score) {
+    					winCode = server.board.players[1].side;    					
+    				}
+    					
+    				out.println(
+    						opt + " " +
+    						winCode
+    					);
+    				
+    			}
+    			return 0;
     		}catch(IOException e) {
     			e.printStackTrace();
     		}
