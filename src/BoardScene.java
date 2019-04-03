@@ -32,9 +32,6 @@ public class BoardScene {
     TextField textField2 = new TextField();
     textField2.setMaxWidth(55);
 
-    Label test = new Label("test");
-    test.setVisible(false);
-
     //houses.setVisible(false);
 
     Button submitButton = new Button("Submit");
