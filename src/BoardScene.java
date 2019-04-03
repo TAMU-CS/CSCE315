@@ -121,7 +121,7 @@ public class BoardScene {
 
     vbox.setAlignment(Pos.CENTER);
 
-    Scene boardScene = new Scene(vbox, 600, 400);
+    Scene boardScene = new Scene(vbox, 500, 300);
 
     return boardScene;
   }
