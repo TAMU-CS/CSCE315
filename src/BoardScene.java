@@ -72,8 +72,8 @@ public class BoardScene {
 
           // Readjust the window with the board
           if(validFeedback1 && validFeedback2) {
-            HBox hbox1 = new HBox(15); // bottom row
-            HBox hbox2 = new HBox(15); // top row
+            HBox hbox1 = new HBox(15); // bottom row of buttons
+            HBox hbox2 = new HBox(15); // top row of buttons
             hbox1.setAlignment(Pos.CENTER);
             hbox2.setAlignment(Pos.CENTER);
 
@@ -85,13 +85,6 @@ public class BoardScene {
               vbox.getChildren().remove(0);
             }
 
-            // Code for adding bottom buttons
-            for(int i = 0; i < houses; i++) {
-              houseButtons[i] = new Button(""+seeds);
-              hbox1.getChildren().add(houseButtons[i]);
-            }
-            vbox.getChildren().add(hbox1);
-
             // Code for adding top buttons
             for(int i = houses; i < houses*2; i++) {
               houseButtons[i] = new Button(""+seeds);
@@ -99,12 +92,15 @@ public class BoardScene {
             }
             vbox.getChildren().add(hbox2);
 
-            Label test = new Label("test");
+            // Code for adding bottom buttons
+            for(int i = 0; i < houses; i++) {
+              houseButtons[i] = new Button(""+seeds);
+              hbox1.getChildren().add(houseButtons[i]);
+            }
+            vbox.getChildren().add(hbox1);
 
             scorePlayer2 = new Label("Score: ");
             hbox1.getChildren().add(scorePlayer2);
-
-            //vbox.getChildren().addAll(hbox1, hbox2);
 
             vbox.setAlignment(Pos.CENTER);
           }
