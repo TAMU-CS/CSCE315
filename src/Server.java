@@ -8,6 +8,7 @@ public class Server {
     private Board board;
     private Player players[];
     public boolean plrJoin[];
+    public boolean plrAI[];
     
     //constructor
     public Server(Board _board) {
@@ -20,19 +21,29 @@ public class Server {
     	//server socket setup with plr id
         serverSocket = new ServerSocket(port);
         int tid = 0;
-        players = new Player[2]; 
+        players = new Player[2];
         
         //loop through client handlers and set up their sockets
-        while (true) {
-            System.out.println("Player " + tid + " Joined!");
-        	ClientHandler ch;
-        	ch = new ClientHandler(serverSocket.accept(), tid, this);        	
-        	Player plr = new Player(ch, tid, false);
-        	players[tid] = plr;
-    		ch.setPlr(plr);
-        	ch.run();
+        while (tid < players.length) {
+        	//check if its an ai
+        	System.out.println(tid + "");
+        	if(plrAI[tid]) {
+	            System.out.println("AI " + tid + " Joined!");
+	        	Player plr = new Player(tid, true);
+	        	players[tid] = plr;
+        	}else {
+	            System.out.println("Player " + tid + " Joined!");
+	        	ClientHandler ch;
+	        	ch = new ClientHandler(serverSocket.accept(), tid, this);        	
+	        	Player plr = new Player(ch, tid, false);
+	        	players[tid] = plr;
+	    		ch.setPlr(plr);
+	        	ch.run();        		
+        	}
             tid++;
         }
+        //initiate the board in server class
+        initGame();        
     }
     
     public void initGame() {
@@ -87,13 +98,7 @@ public class Server {
 
 	            //update player status
 	            server.plrJoin[id] = true;
-	            
-	            //check if both players are ready
-	            if(server.plrJoin[0] && server.plrJoin[1]) {
-	            	//initiate the board in server class
-	            	server.initGame();
-	            }
-	            
+	            	            
 //				in.close();
 //	            out.close();
 //				clientSocket.close();
@@ -178,7 +183,7 @@ public class Server {
     	//create player objects
     	
     	//create board
-    	Board board = new Board(6, 4, false, 0, false);
+    	Board board = new Board(6, 4, false, 0, true);
     	//new Board(housesPerRow, seedsPerHouse, randomizeSeeds);
     	
     	//set up server object
@@ -189,6 +194,9 @@ public class Server {
     	server.plrJoin = new boolean[2];
     	server.plrJoin[0] = false;
     	server.plrJoin[1] = false;
+    	server.plrAI = new boolean[2];
+    	server.plrAI[0] = false;
+    	server.plrAI[1] = true;
     	
         server.start(port);
     }
