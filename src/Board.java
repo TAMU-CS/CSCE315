@@ -5,7 +5,7 @@ import java.util.Random;
 public class Board {
 
 	//board data structure, 2x6 board to represent houses for seeds
-	private int[][] board; // = new int[2][6];
+	public int[][] board; // = new int[2][6];
 
 	int timeToMove;
 	private int psuedoScore;
@@ -246,9 +246,18 @@ public class Board {
 		System.out.println();
 	}
 
-	public void getPlayerScores() {
+	public String getPlayerScores(int playerNum) {
+		if(playerNum == players[0].getSide()) {
+			return "" + players[0].getScore();
+		}
+		else if(playerNum == players[1].getSide()) {
+			return "" + players[1].getScore();
+		}
+		else {
 		System.out.print("Player " + players[0].getSide() + ": " + players[0].getScore() + "\n");
 		System.out.print("Player " + players[1].getSide() + ": " + players[1].getScore() + "\n");
+		return "";
+		}
 	}
 
 	/*
@@ -466,7 +475,7 @@ public class Board {
 			 * continuously ask for moves if plr inputs incorrect move
 			 */
 			printBoard();
-			getPlayerScores();
+			getPlayerScores(-1);
 
 
 			// Pie Rule
@@ -512,7 +521,7 @@ public class Board {
 					switchOn = true;
 
 					System.out.print("Switched scores");
-					getPlayerScores();
+					getPlayerScores(-1);
 				}
 			} // End Pie Rule
 			System.out.println("Player " + playerturn);
