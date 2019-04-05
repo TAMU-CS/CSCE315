@@ -197,7 +197,7 @@ public class Server {
     	server.plrAI = new boolean[2];
     	server.plrAI[0] = false;
     	server.plrAI[1] = true;
-    	
+    	 
         server.start(port);
     }
 }
