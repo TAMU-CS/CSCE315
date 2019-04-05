@@ -29,9 +29,6 @@ public class HomeScene extends Application {
   @Override
   public void start(Stage primaryStage) {
 
-    // Testing purposes for now
-    // First show a list of options and then segue to that specific scene
-
     // Set the scene
     primaryStage.setScene(BoardScene.create(primaryStage));
 
