@@ -57,7 +57,7 @@ public class Client {
         		System.out.println("\n\nBoard State:");
 
         		board.printBoard();
-        		board.getPlayerScores();
+        		board.getPlayerScores(-1);
         	}else if(opt == 3) { //game ended
         		//display the winner
         		System.out.println("Winner: ");

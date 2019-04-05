@@ -19,6 +19,19 @@ public class BoardScene {
 
   static VBox vbox;
 
+  public void updateBoard(Board inBoard) {
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < houseButtons.length / 2; j++) {
+				if (i == 0) {
+					houseButtons[j] = new Button("" + inBoard.board[i][j]);
+				}
+			}
+		}
+		scorePlayer1 = new Label(inBoard.getPlayerScores(0));
+		scorePlayer2 = new Label(inBoard.getPlayerScores(1));
+
+	}
+
   public static Scene create(Stage stage) {
 
     stage.setTitle("Kalah");

@@ -34,5 +34,6 @@ public class HomeScene extends Application {
 
     // Show the window
     primaryStage.show();
+    
   }
 }
