@@ -38,7 +38,10 @@ public class BoardScene {
 
     // Input inquiries
     Label titleLabel = new Label("Welcome");
+    Label menu1Label = new Label("Please Select Configuration");
 
+    Button offlineButton = new Button("Offline");
+    Button onlineButton = new Button("Online");
     Button serverButton = new Button("Server");
 
     Button clientButton = new Button("Client");
