@@ -165,6 +165,7 @@ public class BoardScene {
       }
     });
 
+    // TODO: add houses and seeds in order to show board
     clientButton.setOnAction(new EventHandler<ActionEvent>(){
       @Override
       public void handle(ActionEvent event) {
@@ -173,7 +174,6 @@ public class BoardScene {
           vbox.getChildren().remove(0);
         }
 
-        // Set up the board
         HBox hbox1 = new HBox(15); // bottom row of buttons
         HBox hbox2 = new HBox(15); // top row of buttons
         hbox1.setAlignment(Pos.CENTER);
@@ -189,17 +189,19 @@ public class BoardScene {
           houseButtons[i] = new Button(""+seeds);
           hbox2.getChildren().add(houseButtons[i]);
         }
-        vbox.getChildren().add(hbox2);
+        //vbox.getChildren().add(hbox2);
 
         // Code for adding bottom buttons
         for(int i = 0; i < houses; i++) {
           houseButtons[i] = new Button(""+seeds);
           hbox1.getChildren().add(houseButtons[i]);
         }
-        vbox.getChildren().add(hbox1);
+        //vbox.getChildren().add(hbox1);
 
         scorePlayer2 = new Label("Score: ");
         hbox1.getChildren().add(scorePlayer2);
+
+        vbox.getChildren().addAll(hbox2, hbox1);
 
         vbox.setAlignment(Pos.CENTER);
       }
