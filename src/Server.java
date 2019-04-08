@@ -14,7 +14,7 @@ public class Server {
     public Server(Board _board) {
     	board = _board;
     }
- 
+    
     //starts server to listen in an infinite loop to handle client handler threads
     public void start(int port) throws IOException {
     	
@@ -145,7 +145,11 @@ public class Server {
     		return 0;
     	}
     }
-        
+    
+    public static void serverStart() {
+    	
+    }
+    
     public static void main(String[] args) throws IOException {
     	/*
     	//must get options for server configuration
@@ -181,7 +185,7 @@ public class Server {
     	*/
     	
     	//create player objects
-    	
+    	//HomeScene.main(args);
     	//create board
     	Board board = new Board(6, 4, false, 0, true);
     	//new Board(housesPerRow, seedsPerHouse, randomizeSeeds);
@@ -196,8 +200,9 @@ public class Server {
     	server.plrJoin[1] = false;
     	server.plrAI = new boolean[2];
     	server.plrAI[0] = false;
-    	server.plrAI[1] = true;
+    	server.plrAI[1] = false;
     	
         server.start(port);
     }
+    
 }

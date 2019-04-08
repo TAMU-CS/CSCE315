@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -18,24 +20,23 @@ import javafx.event.ActionEvent;
   5. Server 2-clients
 */
 
-
 public class HomeScene extends Application {
 
-  public static void main(String[] args) {
-    //launch the Application
-    launch(args);
-  }//end main
+	public static void main(String[] args) {
+		// launch the Application
+		launch(args);
+	}// end main
 
-  @Override
-  public void start(Stage primaryStage) {
+	@Override
+	public void start(Stage primaryStage){
 
-    // Testing purposes for now
-    // First show a list of options and then segue to that specific scene
+		// Testing purposes for now
+		// First show a list of options and then segue to that specific scene
 
-    // Set the scene
-    primaryStage.setScene(BoardScene.create(primaryStage));
+		// Set the scene
+		primaryStage.setScene(BoardScene.create(primaryStage));
 
-    // Show the window
-    primaryStage.show();
-  }
+		// Show the window
+		primaryStage.show();			
+	}
 }
