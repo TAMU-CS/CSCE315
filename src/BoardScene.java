@@ -43,6 +43,10 @@ public class BoardScene {
     Button offlineButton = new Button("Offline");
     Button onlineButton = new Button("Online");
     Button serverButton = new Button("Server");
+    Button onePlayerOff = new Button("1 Player");
+    Button twoPlayerOff = new Button("2 PLayer");
+    Button onePLayerOn = new Button("1 Player");
+    Button twoPlayerOn = new Button("2 Player");
 
     Button clientButton = new Button("Client");
     // End of input inquiries
@@ -50,6 +54,7 @@ public class BoardScene {
     Label textLabel1 = new Label("Enter the number of houses 4-9");
     Label textLabel2 = new Label("Enter the seeds 1-10");
     CheckBox cb = new CheckBox("Random");
+    CheckBox ai = new CheckBox("AI");
 
     // Inputs for house and seed count
     TextField textField1 = new TextField();
@@ -98,7 +103,12 @@ public class BoardScene {
               textLabel2.setText("Enter valid seeds 1-10");
               validFeedback2 = false;
             }
-
+            if(ai.isSelected()) {
+            	//Starts game with AI
+            }
+            else {
+            	//Doesn't
+            }
             // Readjust the window with the board
             if(validFeedback1 && validFeedback2) {
               HBox hbox1 = new HBox(15); // bottom row of buttons
@@ -150,6 +160,30 @@ public class BoardScene {
     });
 
     //vbox = new VBox(20, textLabel1, textField1, textLabel2, textField2, cb, submitButton);
+    //Online option chosen
+    onlineButton.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent event) {
+    	  for(int i = 0; i < 3; i++) {
+    		  vbox.getChildren().remove(0);
+    	  }
+    	  vbox.getChildren().addAll(titleLabel, serverButton, clientButton);
+    	  vbox.setAlignment(Pos.CENTER);
+      }
+    });
+    
+
+    offlineButton.setOnAction(new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent event) {
+      	  for(int i = 0; i < 3; i++) {
+      		  vbox.getChildren().remove(0);
+      	  }
+      	  vbox.getChildren().addAll(textLabel1, textField1, textLabel2, textField2, cb, ai, submitButton);
+      	  vbox.setAlignment(Pos.CENTER);
+        }
+      });
+    		
 
     // Server Button clicked: Show input inquiries
     serverButton.setOnAction(new EventHandler<ActionEvent>(){
@@ -160,7 +194,7 @@ public class BoardScene {
           vbox.getChildren().remove(0);
         }
 
-        vbox.getChildren().addAll(textLabel1, textField1, textLabel2, textField2, cb, submitButton);
+        vbox.getChildren().addAll(textLabel1, textField1, textLabel2, textField2, cb, ai, submitButton);
         vbox.setAlignment(Pos.CENTER);
       }
     });
@@ -207,7 +241,7 @@ public class BoardScene {
       }
     });
 
-    vbox = new VBox(20, titleLabel, serverButton, clientButton);
+    vbox = new VBox(20, titleLabel, onlineButton, offlineButton);
 
     vbox.setAlignment(Pos.CENTER);
 
