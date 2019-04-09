@@ -25,7 +25,27 @@ public class BoardScene {
 	static HBox bottomHBox;
 	static boolean isOnline; //is this 2player online/offline
 	static boolean isServer; //is this server, if not , then client
+	static boolean debugging = true; //displays stuff into cli
 
+	//start local game will just run the game locally
+	static private void startLocalGame() {
+		
+	}
+	
+	//start online game will initiate a server
+	static private void startOnlineGame() {
+    	//set up server object
+    	Server server=new Server();
+    	int port = 6666;
+    	
+        try {
+			server.start(port);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	static public void initiateBoard(Board inboard) {
 		vbox.getChildren().clear();
 
@@ -151,9 +171,17 @@ public class BoardScene {
 		submitButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				Integer feedback1, feedback2 = 0; // variable that tells us what is sent from the textfield
+				//feedback list:
+				//1- houses
+				//2- seeds
+				//3- random
+				//4- ai
+				Integer feedback1, feedback2 = 0; 
+				boolean feedback3 = cb.isSelected();
+				boolean feedback4 = ai.isSelected();
 				boolean validFeedback1, validFeedback2 = false;
 
+				//get process feedback
 				if (textField1.getText() != null && !textField1.getText().isEmpty() && textField2.getText() != null
 						&& !textField2.getText().isEmpty()) {
 					feedback1 = Integer.valueOf(textField1.getText()); // houses
@@ -162,7 +190,6 @@ public class BoardScene {
 					// Check for valid houses
 					if (feedback1 >= 4 && feedback1 <= 9) {
 						houses = feedback1;
-						System.out.printf("houses: %d", houses);
 						validFeedback1 = true;
 					} else {
 						textLabel1.setText("Enter valid houses 4-9");
@@ -172,7 +199,6 @@ public class BoardScene {
 					// Check for valid seeds
 					if (feedback2 >= 1 && feedback1 <= 10) {
 						seeds = feedback2;
-						System.out.printf("seeds: %d", seeds);
 						validFeedback2 = true;
 					} else {
 						textLabel2.setText("Enter valid seeds 1-10");
@@ -181,8 +207,35 @@ public class BoardScene {
 
 					// Readjust the window with the board
 					if (validFeedback1 && validFeedback2) {
-						//create server based off of feedback						
-						initiateBoard(new Board());
+						if(debugging) { //display to cli, feedback
+							System.out.println("Input: " + 
+								feedback1 + " " +
+								feedback2 + " " +
+								feedback3 + " " +
+								feedback4 + " "
+							);
+						}
+						
+						//clear out ui
+						vbox.getChildren().clear();
+						
+						//create the board based on input
+						Board board= new Board(feedback1, feedback2, feedback3);
+						System.out.println(board);
+						
+						//create server based off of feedback
+						//run this in a new thread
+						Thread thread = new Thread() {
+							public void run(){
+								if(isOnline){ //connecting two clients
+									startOnlineGame();
+								}else { //just play locally
+									startLocalGame();
+								}								
+							}
+						};
+						thread.start();
+
 					}
 				}
 				// Checks for empty input

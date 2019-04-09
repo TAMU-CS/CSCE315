@@ -1,15 +1,14 @@
-package test;
-
-import java.util.Scanner;
-
-public class Player {
+//package test;
+//
+//import java.util.Scanner;
+//
+//public class Player {
 //	Server.ClientHandler clientHandler;
 //	boolean consoleInput;
 //	int numTurnsHasTaken;
 //	int score;
 //	int side;
 //	boolean ai;
-//	
 //
 //	/*
 //	 * default constructor
@@ -21,7 +20,6 @@ public class Player {
 //		side = defSide;
 //		ai = type;
 //	}
-//
 //
 //	/*
 //	 * construct player with client handler
@@ -42,11 +40,11 @@ public class Player {
 //	public int getSide() {
 //		return side;
 //	}
-//	
+//
 //	public boolean isAi() {
 //		return ai;
 //	}
-//	
+//
 //	public void setSide(int newSide) {
 //		side = newSide;
 //		return;
@@ -65,29 +63,29 @@ public class Player {
 //	}
 //
 //	/*
-//	 * GetMove, returns the i, j position of the mancala house
-//	 * the player attempts to move
+//	 * GetMove, returns the i, j position of the mancala house the player attempts
+//	 * to move
 //	 */
 //	public int getMove(int timeForMove, int opt) {
-//		//opt = 1 means standard get move
-//		//opt = 2 means pie rule request
-//		
+//		// opt = 1 means standard get move
+//		// opt = 2 means pie rule request
+//
 //		numTurnsHasTaken++;
-//		if(consoleInput) {
-//			if(opt == 1) {
-//				//keep iterating till legal move
-//				
+//		if (consoleInput) {
+//			if (opt == 1) {
+//				// keep iterating till legal move
+//
 //				Scanner scanObj = new Scanner(System.in);
 //				System.out.println("Enter index of your houses:");
 //				return scanObj.nextInt();
-//			}else if(opt == 2) {
+//			} else if (opt == 2) {
 //				Scanner scanObj = new Scanner(System.in);
 //				System.out.println("Enter option for pie rule: ");
-//				return scanObj.nextInt();				
+//				return scanObj.nextInt();
 //			}
 //			return 0;
-//		}else {
+//		} else {
 //			return clientHandler.getMove(timeForMove, opt);
 //		}
 //	}
-}
+//}
