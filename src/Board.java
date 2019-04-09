@@ -5,7 +5,7 @@ import java.util.Random;
 public class Board {
 
 	//board data structure, 2x6 board to represent houses for seeds
-	private int[][] board; // = new int[2][6];
+	public int[][] board; // = new int[2][6];
 
 	int timeToMove;
 	private int psuedoScore;
@@ -194,10 +194,17 @@ public class Board {
 	/*
 	 * StartGame is the main game loop where it players through the game logic
 	 */
-	public void StartGame(Player p0, Player p1) {
+	public void StartGame(Player p0, Player p1, Server server) {
 		players[0] = p0;
 		players[1] = p1;
 
+		if(!p0.consoleInput) {
+			p0.clientHandler.out.println("1 " + server.board.toString());
+		}
+		if(!p1.consoleInput) {
+			p1.clientHandler.out.println("1 " + server.board.toString());
+		}
+		
 		//player initiation
 		//players[0] = new Player(0, false);
 		//players[1] = new Player(1, AI);
@@ -246,9 +253,18 @@ public class Board {
 		System.out.println();
 	}
 
-	public void getPlayerScores() {
+	public String getPlayerScores(int playerNum) {
+		if(playerNum == players[0].getSide()) {
+			return "" + players[0].getScore();
+		}
+		else if(playerNum == players[1].getSide()) {
+			return "" + players[1].getScore();
+		}
+		else {
 		System.out.print("Player " + players[0].getSide() + ": " + players[0].getScore() + "\n");
 		System.out.print("Player " + players[1].getSide() + ": " + players[1].getScore() + "\n");
+		return "";
+		}
 	}
 
 	/*
@@ -466,7 +482,7 @@ public class Board {
 			 * continuously ask for moves if plr inputs incorrect move
 			 */
 			printBoard();
-			getPlayerScores();
+			getPlayerScores(-1);
 
 
 			// Pie Rule
@@ -512,7 +528,7 @@ public class Board {
 					switchOn = true;
 
 					System.out.print("Switched scores");
-					getPlayerScores();
+					getPlayerScores(-1);
 				}
 			} // End Pie Rule
 			System.out.println("Player " + playerturn);
@@ -539,6 +555,12 @@ public class Board {
 				System.out.println("Cannot pick empty house! Try again.");
 				move = players[plr].getMove(timeToMove, 1);
 			}
+			
+			 players[plr].clientHandler.out.println(
+					"4 " +
+					toString()
+				);
+	
 		} while( Move(plr, move, false) );
 
 		//System.out.println("Next Turn");
@@ -634,7 +656,7 @@ public class Board {
 		Board board = new Board(houseIn, seedsIn, randIn, 0 ,  AIin);
 		Player p0 = new Player(0, false);
 		Player p1 = new Player(1, AIin);
-		board.StartGame(p0, p1);
+		//board.StartGame(p0, p1);
 	}
 
 }

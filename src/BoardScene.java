@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
@@ -15,64 +16,162 @@ import java.io.*;
 public class BoardScene {
 
 	static int houses, seeds = 0; // input inquiries from user
+	static Board curBoard;
 
 	static Button[] houseButtons; // button array for houses
 
 	static Label scorePlayer1, scorePlayer2;
 
 	static VBox vbox;
+	static HBox topHBox;
+	static HBox bottomHBox;
 
 	// input / socket variables
 	static int time;
 	static PrintWriter out;
+	static BufferedReader in;
 	static boolean endgame;
 	static boolean inputCounter;
+	static Player plr;
+
+	static public void updateBoard(Board inBoard) {
+		curBoard = inBoard;
+		Platform.runLater(new Runnable() {
+		    public void run() {
+				System.out.println("updating board!");
+				for (int i = 0; i < 2; i++) {
+					for (int j = 0; j < houseButtons.length / 2; j++) {
+						houseButtons[i * houseButtons.length / 2 + j].setText("" + inBoard.board[i][j]); //= new Button("" + inBoard.board[i][j]);
+					}
+				}
+				scorePlayer1.setText("" + inBoard.getPlayerScores(0)); //= new Label(inBoard.getPlayerScores(0));
+				scorePlayer2.setText("" + inBoard.getPlayerScores(1)); //= new Label(inBoard.getPlayerScores(1));
+
+		    }
+		});
+
+	}
 
 	// call back function used by house buttons
 	// used for get move
 	public static void onSeedClick(int index) {
-		if(!inputCounter) {
+		if (!inputCounter) {
 			return;
 		}
-		//check if input counter
+		// check if input counter
 		out.println(index + "");
+
+		//update board based on move
+		if(curBoard.CheckMove(plr.side, index)) {
+			System.out.println("Invalid Move: check client side!");
+		}
 		
-		//reset the timer
+//		try {
+//			String inputLine = in.readLine();
+//			String tokens[] = inputLine.split(" ");
+//			int oplrId = plr.side == 1 ? 0 : 1;
+//
+//			Player oplr = new Player(oplrId, false);
+//
+//			curBoard = new Board(tokens, plr, oplr);
+//			
+//			//update board with this
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
-		//reset input counter
+		// reset input counter
 		inputCounter = false;
-		
+
 	}
 
-	//update all information from socket connection
-	public static void updateInputConfiguration(int timeForMove, PrintWriter _out) {
+	// update all information from socket connection
+	public static void updateInputConfiguration(int timeForMove, PrintWriter _out, BufferedReader _in, Board b, Player _plr) {
 		if (timeForMove == 0) {
 			time = Integer.MAX_VALUE;
 		} else {
 			time = timeForMove;
 		}
-		
+
 		out = _out;
+		in = _in;
+		plr = _plr;
+
+		//setup board
+		curBoard = b;
+		houses = curBoard.houses;
+		System.out.println(curBoard);
+
+        topHBox = new HBox(15); // bottom row of buttons
+        bottomHBox = new HBox(15); // top row of buttons
+        topHBox.setAlignment(Pos.CENTER);
+        bottomHBox.setAlignment(Pos.CENTER);
+
+        scorePlayer1 = new Label("Score: 0");
+        topHBox.getChildren().add(scorePlayer1);
+
+        houseButtons = new Button[houses*2];
+
+        // Code for adding top buttons
+        for(int i = houses; i < houses*2; i++) {
+          houseButtons[i] = new Button(""+curBoard.board[1][i-houses]);
+          bottomHBox.getChildren().add(houseButtons[i]);
+        }
+        //vbox.getChildren().add(hbox2);
+
+        // Code for adding bottom buttons
+        for(int i = 0; i < houses; i++) {
+          houseButtons[i] = new Button(""+curBoard.board[0][i]);
+          topHBox.getChildren().add(houseButtons[i]);
+			// set the event action
+			final int index = i;
+			houseButtons[i].setOnAction(E -> {
+				// call on click handle
+				onSeedClick(index);
+			});
+		}
+        //vbox.getChildren().add(hbox1);
+
+        scorePlayer2 = new Label("Score: 0");
+        topHBox.getChildren().add(scorePlayer2);
 		
-		System.out.println("Input Configuration Updated!");
-	}
-	
-	public static void updateBoard(Board board) {
 		
 	}
 
 	public static Scene create(Stage stage) {
-
 		stage.setTitle("Kalah");
-
-		Label textLabel1 = new Label("Enter the number of houses 4-9");
-		Label textLabel2 = new Label("Enter the seeds 1-10");
+	
+	    // Input inquiries
+	    Label titleLabel = new Label("Welcome");
+	    Label menu1Label = new Label("Please Select Configuration");
+	
+	    Button offlineButton = new Button("Offline");
+	    Button onlineButton = new Button("Online");
+	    Button serverButton = new Button("Server");
+	    Button onePlayerOff = new Button("1 Player");
+	    Button twoPlayerOff = new Button("2 PLayer");
+	    Button onePLayerOn = new Button("1 Player");
+	    Button twoPlayerOn = new Button("2 Player");
+	
+	    Button clientButton = new Button("Client");
+	    // End of input inquiries
+	
+	    Label textLabel1 = new Label("Enter the number of houses 4-9");
+	    Label textLabel2 = new Label("Enter the seeds 1-10");
+	    CheckBox cb = new CheckBox("Random");
+	    CheckBox ai = new CheckBox("AI");
 
 		// Inputs for house and seed count
 		TextField textField1 = new TextField();
 		textField1.setMaxWidth(55);
 		TextField textField2 = new TextField();
 		textField2.setMaxWidth(55);
+
+		// Player chose a random distribution. Arrange the board accordingly
+        if(cb.isSelected()) {
+          System.out.println("Chose random");
+        }
 
 		// houses.setVisible(false);
 
@@ -165,12 +264,72 @@ public class BoardScene {
 			}
 		});
 
-		vbox = new VBox(20, textLabel1, textField1, textLabel2, textField2, submitButton);
+	    //vbox = new VBox(20, textLabel1, textField1, textLabel2, textField2, cb, submitButton);
+	    //Online option chosen
+	    onlineButton.setOnAction(new EventHandler<ActionEvent>() {
+	      @Override
+	      public void handle(ActionEvent event) {
+	    	  for(int i = 0; i < 3; i++) {
+	    		  vbox.getChildren().remove(0);
+	    	  }
+	    	  vbox.getChildren().addAll(titleLabel, serverButton, clientButton);
+	    	  vbox.setAlignment(Pos.CENTER);
+	      }
+	    });
+	    
+	
+	    offlineButton.setOnAction(new EventHandler<ActionEvent>() {
+	        @Override
+	        public void handle(ActionEvent event) {
+	      	  for(int i = 0; i < 3; i++) {
+	      		  vbox.getChildren().remove(0);
+	      	  }
+	      	  vbox.getChildren().addAll(textLabel1, textField1, textLabel2, textField2, cb, ai, submitButton);
+	      	  vbox.setAlignment(Pos.CENTER);
+	        }
+	      });
+	    		
+	
+	    // Server Button clicked: Show input inquiries
+	    serverButton.setOnAction(new EventHandler<ActionEvent>(){
+	      @Override
+	      public void handle(ActionEvent event) {
+	        // Removes the input inquiries
+	        for(int i = 0; i < 3; i++) {
+	          vbox.getChildren().remove(0);
+	        }
+	
+	        vbox.getChildren().addAll(textLabel1, textField1, textLabel2, textField2, cb, ai, submitButton);
 
+	        vbox.setAlignment(Pos.CENTER);
+	      }
+	    });
+	
+	    // TODO: add houses and seeds in order to show board
+	    clientButton.setOnAction(new EventHandler<ActionEvent>(){
+	      @Override
+	      public void handle(ActionEvent event) {
+	        // Removes the input inquiries
+	        for(int i = 0; i < 3; i++) {
+	          vbox.getChildren().remove(0);
+	        }
+	
+
+	        vbox.getChildren().addAll(bottomHBox, topHBox);
+	
+	        vbox.setAlignment(Pos.CENTER);
+	      }
+	    });
+	
+	    vbox = new VBox(20, titleLabel, onlineButton, offlineButton);
+	
+		//vbox=new VBox(20,textLabel1,textField1,textLabel2,textField2,submitButton);
+	
 		vbox.setAlignment(Pos.CENTER);
-
+	
 		Scene boardScene = new Scene(vbox, 500, 300);
-
+	
 		return boardScene;
 	}
+	
 }

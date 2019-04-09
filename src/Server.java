@@ -5,7 +5,7 @@ import java.io.*;
 public class Server {
 	//socket to receive info from client sockets
     private ServerSocket serverSocket;
-    private Board board;
+    public Board board;
     private Player players[];
     public boolean plrJoin[];
     public boolean plrAI[];
@@ -48,7 +48,7 @@ public class Server {
     
     public void initGame() {
     	//create the player objects
-    	board.StartGame(players[0], players[1]);
+    	board.StartGame(players[0], players[1], this);
     }
 
     public void stop() throws IOException {
@@ -57,7 +57,7 @@ public class Server {
     
     public static class ClientHandler extends Thread{
     	private Socket clientSocket;
-    	private PrintWriter out;
+    	public PrintWriter out;
     	private BufferedReader in;
     	private int id;
     	private int curMove;
@@ -121,6 +121,7 @@ public class Server {
 	    				);
 	    	
 	    			String inputLine = in.readLine();
+	    			
 	        		return Integer.parseInt(inputLine);    				
     			}else if(opt == 3) {
     				System.out.println("Notifying player of winner");

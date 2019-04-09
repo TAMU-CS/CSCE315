@@ -24,22 +24,29 @@ public class Client extends Thread {
 		inputLine = in.readLine();
 		System.out.println(inputLine);
 		String confTokens[] = inputLine.split(" ");
-
+		out.println("READY");
+		inputLine = in.readLine();
+		String boardTokens[] = inputLine.split(" ");
+		
+		
 		// define board conf variables
 		int houses = Integer.parseInt(confTokens[1]);
 		int seeds = Integer.parseInt(confTokens[2]);
 		int timeToMove = Integer.parseInt(confTokens[3]);
 		int id = Integer.parseInt(confTokens[4]);
+		int oplrId = id == 1 ? 0 : 1;
+		Player oplr = new Player(oplrId, false);
 
 		// create player object
 		plr = new Player(id, false);
 		System.out.println("Hello Player " + plr.side + "!");
 
 		// update boardscene ui configuratio
-		BoardScene.updateInputConfiguration(0, out);
+		Board board = new Board(boardTokens, plr, oplr);
+		BoardScene.updateInputConfiguration(0, out, in, board, plr);
+		System.out.println(inputLine);
 
 		// 3. acknowledge that input was received
-		out.println("READY");
 
 		int inputCounter = 0;
 		while ((inputLine = in.readLine()) != null) {
@@ -50,13 +57,11 @@ public class Client extends Thread {
 			// System.out.println(inputLine);
 
 			// display board and update state
-			Player oplr;
-			Board board;
 			int opt = Integer.parseInt(tokens[0]);
 			if (opt == 1 || opt == 2) {
 				// initiate other players
 				// LAST ERROR, this portion was unresponsive!
-				int oplrId = plr.side == 1 ? 0 : 1;
+				oplrId = plr.side == 1 ? 0 : 1;
 
 				oplr = new Player(oplrId, false);
 
@@ -67,7 +72,7 @@ public class Client extends Thread {
 				System.out.println("\n\nBoard State:");
 
 				board.printBoard();
-				board.getPlayerScores();
+				board.getPlayerScores(-1);
 
 				// update the board
 				BoardScene.updateBoard(board);
@@ -78,6 +83,24 @@ public class Client extends Thread {
 				System.out.println(inputLine);
 
 				break;
+			} else if (opt == 4) { //just update the board
+				// initiate other players
+				// LAST ERROR, this portion was unresponsive!
+				oplrId = plr.side == 1 ? 0 : 1;
+
+				oplr = new Player(oplrId, false);
+
+				// initiate board
+				board = new Board(tokens, plr, oplr);
+
+				// print board state
+				System.out.println("\n\nBoard State:");
+
+				board.printBoard();
+				board.getPlayerScores(-1);
+
+				// update the board
+				BoardScene.updateBoard(board);				
 			}
 
 			// getting input from cli
