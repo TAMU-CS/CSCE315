@@ -351,6 +351,31 @@ public class Board {
 		return board.length/2 - 1;
 	}
 	
+	public int getAIMove() {
+		//get set of player holes
+		int range[] = new int[2];
+		int plrHole;
+		
+		if(curMove == 0) {
+			plrHole = board.length/2 - 1;
+			
+			range[0] = 0;
+			range[1] = plrHole - 1;
+		}else {
+			plrHole = board.length - 1;			
+			
+			range[0] = board.length/2;
+			range[1] = plrHole - 1;
+		}
+		
+		for(int i = range[0]; i <= range[1]; i++) {
+			if(board[i] != 0) {
+				return i - range[0];
+			}
+		}
+		return 0;
+	}
+	
 	/*
 	 * toString gives stringified value to represent the current board
 	 */

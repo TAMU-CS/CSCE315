@@ -23,10 +23,20 @@ public class Server {
 		int tid = 0;
 
 		// loop through client handlers and set up their sockets
-		while (tid < 2) {
-			chs[tid] = new ClientHandler(serverSocket.accept());
-			chs[tid].run();
-			tid++;
+		//check for ai
+		if(BoardScene.isAI) {
+			tid = 1;
+			while (tid < 2) {
+				chs[tid] = new ClientHandler(serverSocket.accept());
+				chs[tid].run();
+				tid++;
+			}
+		}else {
+			while (tid < 2) {
+				chs[tid] = new ClientHandler(serverSocket.accept());
+				chs[tid].run();
+				tid++;
+			}			
 		}
 	}
 

@@ -25,6 +25,7 @@ public class BoardScene {
 	static HBox bottomHBox;
 	static boolean isOnline; // is this 2player online/offline
 	static boolean isServer; // is this server, if not , then client
+	static boolean isAI; // should we take ai into account
 	static boolean debugging = true; // displays stuff into cli
 	static Board board; // this is board state
 
@@ -46,7 +47,7 @@ public class BoardScene {
 				public void run() {
 					// display the board and wait for inputs
 					initiateBoard(false, 0);
-					notifLabel.setText("Waiting On Clients To Join!");									
+					notifLabel.setText("Waiting On Clients To Join!");
 				}
 			});
 
@@ -55,88 +56,115 @@ public class BoardScene {
 			int port = 6666;
 
 			server.start(port);
-			
-			//give user info
-			int notCurMove = board.curMove == 1 ? 0 : 1;
-			String resp = server.sendMsg(board.curMove, board.curMove + " " + board.toString());
-			resp = server.sendMsg(notCurMove, notCurMove + " " + board.toString());
 
-			//handle the first move
-			resp = server.chs[0].in.readLine();
-			board.nextTurn(Integer.parseInt(resp));
+			// give user info
+			int notCurMove = board.curMove == 1 ? 0 : 1;
+			String resp;
 			
-			// get user moves
-			while(true) {
-				
-				//TODO: check to get response from player OR AI	
-				if(board.curMove == 0) {
-					server.sendMsg(1, board.toString());
-					resp = server.sendMsg(0, board.toString());
-				}else {
-					server.sendMsg(0, board.toString());
-					resp = server.sendMsg(1, board.toString());					
-				}
-							
-				board.nextTurn(Integer.parseInt(resp));
-				
-				//check if endgame
-				if(board.endgame()) {
-					//send crucial info
-					server.sendMsg(0, board.toString());
-					server.sendMsg(1, board.toString());					
-					break;
-				}
-				
-				Platform.runLater(new Runnable() {
-					public void run() {
-						// display the board and wait for inputs
-						initiateBoard(false, 0);						
-					}
-				});
+			// handle the first move
+			if(!isAI) {
+				resp = server.sendMsg(board.curMove, board.curMove + " " + board.toString());
+				resp = server.sendMsg(notCurMove, notCurMove + " " + board.toString());
+			}else {
+				resp = server.sendMsg(notCurMove, notCurMove + " " + board.toString());	
 			}
 
-		}else { //client
-			//start up client handler
+			// get user moves
+			System.out.println("is AI?" + isAI);
+			while (true) {
+				if (!isAI) {
+					if (board.curMove == 0) {
+						server.sendMsg(1, board.toString());
+						resp = server.sendMsg(0, board.toString());
+					} else {
+						server.sendMsg(0, board.toString());
+						resp = server.sendMsg(1, board.toString());
+					}
+
+					board.nextTurn(Integer.parseInt(resp));
+
+					// check if endgame
+					if (board.endgame()) {
+						// send crucial info
+						server.sendMsg(0, board.toString());
+						server.sendMsg(1, board.toString());
+						break;
+					}
+
+					Platform.runLater(new Runnable() {
+						public void run() {
+							// display the board and wait for inputs
+							initiateBoard(false, 0);
+						}
+					});
+				} else {
+					if (board.curMove == 0) { //ai response
+						resp = board.getAIMove() + "";
+						server.sendMsg(1, board.toString());
+					} else { //human response
+						resp = server.sendMsg(1, board.toString());
+					}
+
+					board.nextTurn(Integer.parseInt(resp));
+
+					// check if endgame
+					if (board.endgame()) {
+						// send crucial info
+						server.sendMsg(1, board.toString());
+						break;
+					}
+
+					Platform.runLater(new Runnable() {
+						public void run() {
+							// display the board and wait for inputs
+							initiateBoard(false, 0);
+						}
+					});
+				}
+			}
+
+		} else { // client
+			// start up client handler
 			Client.startConnection("127.0.0.1", 6666);
-			
-			//based off of the board, create board
+
+			// based off of the board, create board
 			String resp = Client.in.readLine();
 			System.out.println(resp);
 			Client.out.println("Ready");
-			
-			//get ch id
+
+			// get ch id
 			String tokens[] = resp.split(" ");
-			
-			//setup board
+
+			// setup board
 			int plrPersp = Integer.parseInt(tokens[0]);
 			board = new Board(tokens);
 			houses = board.getHouses();
 			System.out.println(board);
-			
-			//display board
+
+			// display board
 			Platform.runLater(new Runnable() {
 				public void run() {
 					initiateBoard(true, plrPersp);
 				}
 			});
-			
-			while(true) {
-				//get message from server
+
+			while (true) {
+				// get message from server
 				resp = Client.in.readLine();
 				tokens = resp.split(" ");
 				board = new Board(tokens);
 				houses = board.getHouses();
 				System.out.println(board);
-				if(board.endgame()) {
+				if (board.endgame()) {
 					Client.out.println("OK");
 					break;
 				}
-				
-				if(board.curMove != plrPersp) {
+
+				if (board.curMove != plrPersp) {
 					Client.out.println("OK");
 				}
-				
-				//initiate board
+
+				// initiate board
 				Platform.runLater(new Runnable() {
 					public void run() {
 						// display the board and wait for inputs
@@ -144,15 +172,16 @@ public class BoardScene {
 					}
 				});
 			}
-			
-			//print winners/result
-			//initiate board
+
+			// print winners/result
+			// initiate board
 			Platform.runLater(new Runnable() {
 				public void run() {
 					// display the board and wait for inputs
 					initiateBoard(false, plrPersp);
 					int outcome = board.getOutcome();
-					notifLabel.setText(outcome == 0 ? "It's a Tie!" : (outcome == 1 ? "Player 1 won!" : "Player 2 won!"));
+					notifLabel
+							.setText(outcome == 0 ? "It's a Tie!" : (outcome == 1 ? "Player 1 won!" : "Player 2 won!"));
 				}
 			});
 		}
@@ -163,10 +192,10 @@ public class BoardScene {
 		vbox.getChildren().clear();
 
 		// player title label
-		if(isOnline) {
+		if (isOnline) {
 			curPlayerLabel = new Label(plrPerspective == 0 ? "Player 1" : "Player 2");
-		}else {
-			curPlayerLabel = new Label(plrPerspective == 0 ? "Player 1 Move" : "Player 2 Move");			
+		} else {
+			curPlayerLabel = new Label(plrPerspective == 0 ? "Player 1 Move" : "Player 2 Move");
 		}
 		vbox.getChildren().add(curPlayerLabel);
 
@@ -187,8 +216,8 @@ public class BoardScene {
 		} else {
 			// blank the notif label before anything happens
 			notifLabel.setText("");
-			if(isOnline) {
-				notifLabel.setText("Waiting on player " + (board.curMove+1));
+			if (isOnline) {
+				notifLabel.setText("Waiting on player " + (board.curMove + 1));
 			}
 		}
 
@@ -242,14 +271,14 @@ public class BoardScene {
 						}
 					}
 				});
-			}else if(playerInput && !isServer) { //client
+			} else if (playerInput && !isServer) { // client
 				final int index = i;
 				houseButtons[i].setOnAction(E -> {
-					//check if player can move
-					if(plrPerspective != board.curMove) {
+					// check if player can move
+					if (plrPerspective != board.curMove) {
 						return;
 					}
-					
+
 					// check if index is legal move
 					if (!board.checkMove(index)) {
 						notifLabel.setText("Invalid House Choice! It is empty!");
@@ -264,10 +293,10 @@ public class BoardScene {
 					if (debugging) {
 						System.out.println(board);
 					}
-					
-					//tell server the move made
+
+					// tell server the move made
 					Client.out.println(index);
-				});				
+				});
 			}
 
 		}
@@ -355,10 +384,10 @@ public class BoardScene {
 			public void handle(ActionEvent event) {
 				isServer = false;
 				vbox.getChildren().clear();
-				
+
 				notifLabel = new Label("Waiting for other player!");
 				vbox.getChildren().add(notifLabel);
-				
+
 				Thread thread = new Thread() {
 					public void run() {
 						try {
@@ -422,6 +451,7 @@ public class BoardScene {
 
 						// create the board based on input
 						board = new Board(feedback1, feedback2, feedback3);
+						isAI = feedback4;
 
 						// create server based off of feedback
 						// run this in a new thread
