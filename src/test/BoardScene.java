@@ -66,11 +66,26 @@ public class BoardScene {
 			board.nextTurn(Integer.parseInt(resp));
 			
 			// get user moves
-			while(!board.endgame()) {
+			while(true) {
 				
 				//TODO: check to get response from player OR AI	
-				resp = server.sendMsg(board.curMove, resp); //send next player the response
+				if(board.curMove == 0) {
+					server.sendMsg(1, board.toString());
+					resp = server.sendMsg(0, board.toString());
+				}else {
+					server.sendMsg(0, board.toString());
+					resp = server.sendMsg(1, board.toString());					
+				}
+							
 				board.nextTurn(Integer.parseInt(resp));
+				
+				//check if endgame
+				if(board.endgame()) {
+					//send crucial info
+					server.sendMsg(0, board.toString());
+					server.sendMsg(1, board.toString());					
+					break;
+				}
 				
 				Platform.runLater(new Runnable() {
 					public void run() {
@@ -79,9 +94,7 @@ public class BoardScene {
 					}
 				});
 			}
-			
-			//display the winners
-			
+
 		}else { //client
 			//start up client handler
 			Client.startConnection("127.0.0.1", 6666);
@@ -107,13 +120,21 @@ public class BoardScene {
 				}
 			});
 			
-			boolean endGame = false;
-			while(!endGame) {
+			while(true) {
 				//get message from server
 				resp = Client.in.readLine();
+				tokens = resp.split(" ");
+				board = new Board(tokens);
+				houses = board.getHouses();
+				System.out.println(board);
+				if(board.endgame()) {
+					Client.out.println("OK");
+					break;
+				}
 				
-				//set move
-				board.nextTurn(Integer.parseInt(resp));
+				if(board.curMove != plrPersp) {
+					Client.out.println("OK");
+				}
 				
 				//initiate board
 				Platform.runLater(new Runnable() {
@@ -123,6 +144,17 @@ public class BoardScene {
 					}
 				});
 			}
+			
+			//print winners/result
+			//initiate board
+			Platform.runLater(new Runnable() {
+				public void run() {
+					// display the board and wait for inputs
+					initiateBoard(false, plrPersp);
+					int outcome = board.getOutcome();
+					notifLabel.setText(outcome == 0 ? "It's a Tie!" : (outcome == 1 ? "Player 1 won!" : "Player 2 won!"));
+				}
+			});
 		}
 	}
 
@@ -226,6 +258,7 @@ public class BoardScene {
 
 					// update the board
 					board.nextTurn(index);
+					initiateBoard(false, plrPerspective);
 
 					// print board if debug is true
 					if (debugging) {
