@@ -1,3 +1,4 @@
+package old;
 import java.util.*;
 
 /*public int miniMax(int depth, boolean isMaximizingPlayer, int playerturn, int[][] boardState) {

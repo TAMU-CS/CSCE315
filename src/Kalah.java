@@ -1,4 +1,5 @@
-package old;
+
+
 import java.io.IOException;
 
 import javafx.application.Application;
@@ -21,15 +22,10 @@ import javafx.event.ActionEvent;
   5. Server 2-clients
 */
 
-public class HomeScene extends Application {
-
-	public static void main(String[] args) {
-		// launch the Application
-		launch(args);
-	}// end main
+public class Kalah extends Application {
 
 	@Override
-	public void start(Stage primaryStage){
+	public void start(Stage primaryStage) {
 
 		// Testing purposes for now
 		// First show a list of options and then segue to that specific scene
@@ -38,7 +34,13 @@ public class HomeScene extends Application {
 		primaryStage.setScene(BoardScene.create(primaryStage));
 
 		// Show the window
-		primaryStage.show();			
+		primaryStage.show();
 	}
+
+
+	public static void main(String[] args) {
+		// launch the Application
+		launch(args);
+	}// end main
 
 }
