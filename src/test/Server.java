@@ -28,19 +28,8 @@ public class Server {
 			chs[tid].run();
 			tid++;
 		}
-		// initiate the board in server class
 	}
 
-	//runs server locally
-	public void start(boolean ai){
-		//ai is player 1 always
-		if(ai) {
-			
-		}else {
-			
-		}
-	}
-	
 	public void stop() throws IOException {
 		serverSocket.close();
 	}

@@ -13,6 +13,9 @@ public class Board {
 
 	// current player moving (player 0 first, player 1 next)
 	int curMove;
+	
+	//debug, print board verbose with issues that appear
+	boolean debugging = true;
 
 	/*
 	 * Constructor 3 feedback for initiation: houses, seeds, and randomize
@@ -155,11 +158,13 @@ public class Board {
 		
 		if(curMove == 0) {
 			plrHole = board.length/2 - 1;
+			oplrHole = board.length - 1;
 			
 			range[0] = 0;
 			range[1] = plrHole - 1;
 		}else {
 			plrHole = board.length - 1;			
+			oplrHole = board.length/2 - 1;
 			
 			range[0] = board.length/2;
 			range[1] = plrHole - 1;
@@ -167,8 +172,8 @@ public class Board {
 		
 				
 		//seeds in board house
-		int seeds = board[input];
-		board[input] = 0;
+		int seeds = board[input + range[0]];
+		board[input + range[0]] = 0;
 		
 		//move seeds through board
 		int i = 0;
@@ -203,7 +208,12 @@ public class Board {
 				}
 			}
 			
+			//if it equals other player position, then add one more
 			pos = (pos + 1) % board.length;
+			if(pos == oplrHole) {
+				pos = (pos + 1) % board.length;
+			}
+			
 			i++;
 		}
 	
@@ -250,8 +260,8 @@ public class Board {
 		//tally up all the points to add to both sides
 		int p1Hole = board.length/2 - 1;		 
 		int p2Hole = board.length - 1;
-		int p1Total = 0;
-		int p2Total = 0;
+		int p1Total = board[board.length/2 - 1];
+		int p2Total = board[board.length - 1];
 		
 		//increment to each hole to get the totals
 		for(int i = 0; i < p1Hole; i++) {
@@ -284,6 +294,24 @@ public class Board {
 		}
 		
 		return board[range[0] + index];
+	}
+	
+	/*
+	 * getScore
+	 * gets score of given plr perspective
+	 */
+	public int getScore(int persp) {
+		//get set of player holes
+		int range[] = new int[2];
+		int plrHole;
+		
+		if(persp == 0) {
+			plrHole = board.length/2 - 1;
+		}else {
+			plrHole = board.length - 1;
+		}
+		
+		return board[plrHole];
 	}
 	
 	/*

@@ -40,15 +40,28 @@ public class BoardScene {
 
 	// start online game will initiate a server
 	static private void startOnlineGame() {
-		// set up server object
-		Server server = new Server();
-		int port = 6666;
+		// check if server or client
+		if (isServer) {
 
-		try {
-			server.start(port);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// set up server object
+			Server server = new Server();
+			int port = 6666;
+
+			try {
+				server.start(port);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			Platform.runLater(new Runnable() {
+				public void run() {
+					// display the board and wait for inputs
+					initiateBoard(false, board.curMove);
+				}
+			});
+		}else { //client
+			
 		}
 	}
 
@@ -65,14 +78,27 @@ public class BoardScene {
 		hbox1.setAlignment(Pos.CENTER);
 		hbox2.setAlignment(Pos.CENTER);
 
-		scorePlayer1 = new Label(plrPerspective == 0 ? "Score P1: " : "Score P2: ");
+		// handle scoring
+		String textP1Score = "Score P1: " + board.getScore(0);
+		String textP2Score = "Score P2: " + board.getScore(1);
+		scorePlayer1 = new Label(plrPerspective == 0 ? textP2Score : textP1Score);
+		scorePlayer2 = new Label(plrPerspective == 0 ? textP1Score : textP2Score);
+
+		// create a new notif label if one hasn't already been made
+		if (notifLabel == null) {
+			notifLabel = new Label("");
+		} else {
+			// blank the notif label before anything happens
+			notifLabel.setText("");
+		}
+
 		hbox1.getChildren().add(scorePlayer1);
 
-		houseButtons = new Button[houses * 2];
-
 		// Code for adding top buttons (from other player perspective)
+		houseButtons = new Button[houses * 2];
 		for (int i = houses; i < houses * 2; i++) {
-			houseButtons[i] = new Button("" + board.getSeeds(i - houses, plrPerspective == 1 ? 0 : 1));
+			// flip the houses
+			houseButtons[i] = new Button("" + board.getSeeds(2 * houses - i - 1, plrPerspective == 1 ? 0 : 1));
 			hbox2.getChildren().add(houseButtons[i]);
 
 		}
@@ -107,26 +133,24 @@ public class BoardScene {
 					if (!board.endgame()) {
 						initiateBoard(true, board.curMove);
 					} else { // display winner
+						initiateBoard(false, board.curMove);
 						int outcome = board.getOutcome();
 						notifLabel.setText(
 								outcome == 0 ? "It's a Tie!" : (outcome == 1 ? "Player 1 won!" : "Player 2 won!"));
 
 						if (debugging) {
-							System.out.println("EndGame!");
-							System.out.println(board);
+							System.out.println("Endboard: " + board);
 						}
 					}
 				});
 			}
 
 		}
-		scorePlayer2 = new Label(plrPerspective == 0 ? "Score P2: " : "Score P1: ");
 		hbox1.getChildren().add(scorePlayer2);
 
 		vbox.getChildren().add(hbox1);
 
 		// setup notification label
-		notifLabel = new Label("");
 		vbox.getChildren().add(notifLabel);
 
 	}
