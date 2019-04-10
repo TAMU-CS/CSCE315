@@ -121,6 +121,35 @@ public class Board {
 
 	}
 
+	/*
+	 * constructor that takes in to-string tokens, and sets up the board
+	 */
+	public Board(String barr[]) {
+		//iterate until "board=" is found
+		int range[] = {-1, -1};
+		for(int i = 0; i < barr.length; i++) {
+			if(barr[i].equals("board=")) {
+				range[0] = i + 1;
+			}else if(barr[i].equals("curMove=")) {
+				//get value after it
+				curMove = Integer.parseInt(barr[i + 1]);
+				range[1] = i - 1;
+			}
+		}
+		
+		if(range[0] == -1) {
+			//invalid stuff
+			if(debugging) {
+				System.out.println("Range[0] is false!");
+			}
+		}
+		
+		//set board
+		board = new int[range[1] - range[0] + 1];
+		for(int i = range[0]; i <= range[1]; i++) {
+			board[i - range[0]] = Integer.parseInt(barr[i]);
+		}
+	}
 	
 	/*
 	 * checkMove
@@ -315,6 +344,14 @@ public class Board {
 	}
 	
 	/*
+	 * getHouses
+	 * returns the width of the board (number of houses for one side)
+	 */
+	public int getHouses() {
+		return board.length/2 - 1;
+	}
+	
+	/*
 	 * toString gives stringified value to represent the current board
 	 */
 	public String toString() {
@@ -338,16 +375,23 @@ public class Board {
 	public static void main(String[] args) {
 		//test board
 		//create the board based on input
-		Board board= new Board(2, 1, false);
-		System.out.println(board);
+//		Board board= new Board(2, 1, false);
+//		System.out.println(board);
+//		
+//		//test move for 1
+//		board.nextTurn(1); //should get to go again
+//		System.out.println(board);
+//		board.nextTurn(0);
+//		System.out.println(board);
+//		board.nextTurn(1);
+//		System.out.println(board);
 		
-		//test move for 1
-		board.nextTurn(1); //should get to go again
-		System.out.println(board);
-		board.nextTurn(0);
-		System.out.println(board);
-		board.nextTurn(1);
-		System.out.println(board);
+		//test tokens constructor
+//		String resp = "0 [ board= 1 1 1 1 0 1 1 1 1 0 curMove= 0 endgame=false ]";
+//		String tokens[] = resp.split(" ");
+//		
+//		Board b = new Board(tokens);
+//		System.out.println(b);
 	}
 
 }

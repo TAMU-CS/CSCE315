@@ -55,21 +55,27 @@ public class BoardScene {
 			int port = 6666;
 
 			server.start(port);
+			
+			//give user info
+			int notCurMove = board.curMove == 1 ? 0 : 1;
+			String resp = server.sendMsg(board.curMove, board.curMove + " " + board.toString());
+			resp = server.sendMsg(notCurMove, notCurMove + " " + board.toString());
 
+			//handle the first move
+			resp = server.chs[0].in.readLine();
+			board.nextTurn(Integer.parseInt(resp));
+			
 			// get user moves
 			while(!board.endgame()) {
 				
-				//TODO: check to get response from player OR AI			
-				String resp = server.sendMsg(board.curMove, board.toString());
-						
+				//TODO: check to get response from player OR AI	
+				resp = server.sendMsg(board.curMove, resp); //send next player the response
 				board.nextTurn(Integer.parseInt(resp));
-						
+				
 				Platform.runLater(new Runnable() {
 					public void run() {
 						// display the board and wait for inputs
-						initiateBoard(false, 0);
-						
-						//get player move
+						initiateBoard(false, 0);						
 					}
 				});
 			}
@@ -77,7 +83,46 @@ public class BoardScene {
 			//display the winners
 			
 		}else { //client
+			//start up client handler
+			Client.startConnection("127.0.0.1", 6666);
 			
+			//based off of the board, create board
+			String resp = Client.in.readLine();
+			System.out.println(resp);
+			Client.out.println("Ready");
+			
+			//get ch id
+			String tokens[] = resp.split(" ");
+			
+			//setup board
+			int plrPersp = Integer.parseInt(tokens[0]);
+			board = new Board(tokens);
+			houses = board.getHouses();
+			System.out.println(board);
+			
+			//display board
+			Platform.runLater(new Runnable() {
+				public void run() {
+					initiateBoard(true, plrPersp);
+				}
+			});
+			
+			boolean endGame = false;
+			while(!endGame) {
+				//get message from server
+				resp = Client.in.readLine();
+				
+				//set move
+				board.nextTurn(Integer.parseInt(resp));
+				
+				//initiate board
+				Platform.runLater(new Runnable() {
+					public void run() {
+						// display the board and wait for inputs
+						initiateBoard(true, plrPersp);
+					}
+				});
+			}
 		}
 	}
 
@@ -86,7 +131,11 @@ public class BoardScene {
 		vbox.getChildren().clear();
 
 		// player title label
-		curPlayerLabel = new Label(plrPerspective == 0 ? "Player 1 Move" : "Player 2 Move");
+		if(isOnline) {
+			curPlayerLabel = new Label(plrPerspective == 0 ? "Player 1" : "Player 2");
+		}else {
+			curPlayerLabel = new Label(plrPerspective == 0 ? "Player 1 Move" : "Player 2 Move");			
+		}
 		vbox.getChildren().add(curPlayerLabel);
 
 		HBox hbox1 = new HBox(15); // bottom row of buttons
@@ -106,6 +155,9 @@ public class BoardScene {
 		} else {
 			// blank the notif label before anything happens
 			notifLabel.setText("");
+			if(isOnline) {
+				notifLabel.setText("Waiting on player " + (board.curMove+1));
+			}
 		}
 
 		hbox1.getChildren().add(scorePlayer1);
@@ -127,7 +179,7 @@ public class BoardScene {
 
 			// set the event action
 
-			if (playerInput) {
+			if (playerInput && !isOnline) {
 				final int index = i;
 				houseButtons[i].setOnAction(E -> {
 					// check if index is legal move
@@ -158,6 +210,31 @@ public class BoardScene {
 						}
 					}
 				});
+			}else if(playerInput && !isServer) { //client
+				final int index = i;
+				houseButtons[i].setOnAction(E -> {
+					//check if player can move
+					if(plrPerspective != board.curMove) {
+						return;
+					}
+					
+					// check if index is legal move
+					if (!board.checkMove(index)) {
+						notifLabel.setText("Invalid House Choice! It is empty!");
+						return;
+					}
+
+					// update the board
+					board.nextTurn(index);
+
+					// print board if debug is true
+					if (debugging) {
+						System.out.println(board);
+					}
+					
+					//tell server the move made
+					Client.out.println(index);
+				});				
 			}
 
 		}
@@ -245,8 +322,20 @@ public class BoardScene {
 			public void handle(ActionEvent event) {
 				isServer = false;
 				vbox.getChildren().clear();
-				vbox.getChildren().addAll(bottomHBox, topHBox);
-				vbox.setAlignment(Pos.CENTER);
+				
+				notifLabel = new Label("Waiting for other player!");
+				vbox.getChildren().add(notifLabel);
+				
+				Thread thread = new Thread() {
+					public void run() {
+						try {
+							startOnlineGame();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				};
+				thread.start();
 			}
 		});
 

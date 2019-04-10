@@ -7,7 +7,7 @@ import java.io.*;
 public class Server {
 	// socket to receive info from client sockets
 	private ServerSocket serverSocket;
-	ClientHandler chs[];
+	public ClientHandler chs[];
 
 	// constructor
 	public Server() {
@@ -43,7 +43,7 @@ public class Server {
 	public static class ClientHandler extends Thread {
 		private Socket clientSocket;
 		public PrintWriter out;
-		private BufferedReader in;
+		public BufferedReader in;
 
 		public ClientHandler(Socket socket) {
 			this.clientSocket = socket;
