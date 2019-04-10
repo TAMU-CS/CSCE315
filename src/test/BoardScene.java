@@ -14,26 +14,32 @@ import javafx.scene.Group;
 import java.net.*;
 import java.util.Scanner;
 import java.io.*;
+import javafx.animation.*;
+import javafx.util.Duration;
 
 public class BoardScene {
 
 	static int houses, seeds = 0; // input inquiries from user
 	static Button[] houseButtons; // button array for houses
-	static Label scorePlayer1, scorePlayer2, curPlayerLabel, notifLabel;
+	static Label scorePlayer1, scorePlayer2, curPlayerLabel, notifLabel, timerLabel;
 	static VBox vbox;
 	static HBox topHBox;
 	static HBox bottomHBox;
+	static timerUI timerObj;
 	static boolean isOnline; // is this 2player online/offline
 	static boolean isServer; // is this server, if not , then client
 	static boolean isAI; // should we take ai into account
 	static int AIDepth;
+	static int timeForMove;
 	static boolean debugging = true; // displays stuff into cli
 	static Board board; // this is board state
 
 	// start local game will just run the game locally
 	static private void startLocalGame() {
+
 		Platform.runLater(new Runnable() {
 			public void run() {
+				timerLabel = new Label("");
 				// display the board and wait for inputs
 				initiateBoard(true, board.curMove);
 			}
@@ -61,13 +67,13 @@ public class BoardScene {
 			// give user info
 			int notCurMove = board.curMove == 1 ? 0 : 1;
 			String resp;
-			
+
 			// handle the first move
-			if(!isAI) {
+			if (!isAI) {
 				resp = server.sendMsg(board.curMove, board.curMove + " " + board.toString());
 				resp = server.sendMsg(notCurMove, notCurMove + " " + board.toString());
-			}else {
-				resp = server.sendMsg(notCurMove, notCurMove + " " + board.toString());	
+			} else {
+				resp = server.sendMsg(notCurMove, notCurMove + " " + board.toString());
 			}
 
 			while (true) {
@@ -97,10 +103,10 @@ public class BoardScene {
 						}
 					});
 				} else {
-					if (board.curMove == 0) { //ai response
+					if (board.curMove == 0) { // ai response
 						resp = MiniMax.getMove(board.toString(), AIDepth, 0) + "";
 						server.sendMsg(1, board.toString());
-					} else { //human response
+					} else { // human response
 						resp = server.sendMsg(1, board.toString());
 					}
 
@@ -194,6 +200,10 @@ public class BoardScene {
 		if (isOnline) {
 			curPlayerLabel = new Label(plrPerspective == 0 ? "Player 1" : "Player 2");
 		} else {
+
+			//begin timer
+			timerObj = new BoardScene.timerUI(timeForMove, timerLabel, 0);
+			vbox.getChildren().add(timerLabel);
 			curPlayerLabel = new Label(plrPerspective == 0 ? "Player 1 Move" : "Player 2 Move");
 		}
 		vbox.getChildren().add(curPlayerLabel);
@@ -237,8 +247,7 @@ public class BoardScene {
 			houseButtons[i] = new Button("" + board.getSeeds(i, plrPerspective));
 			hbox1.getChildren().add(houseButtons[i]);
 
-			// set the event action
-
+			// offline
 			if (playerInput && !isOnline) {
 				final int index = i;
 				houseButtons[i].setOnAction(E -> {
@@ -250,6 +259,10 @@ public class BoardScene {
 
 					// update the board
 					board.nextTurn(index);
+					
+					if(timeForMove != 0) {
+						timerObj.time.pause();
+					}
 
 					// print board if debug is true
 					if (debugging) {
@@ -258,13 +271,16 @@ public class BoardScene {
 
 					// check for endgame
 					if (!board.endgame()) {
+
 						initiateBoard(true, board.curMove);
-					} else { // display winner
+
+					} else { // display winner stop timer
+
+						timerObj.time.pause();
 						initiateBoard(false, board.curMove);
 						int outcome = board.getOutcome();
 						notifLabel.setText(
 								outcome == 0 ? "It's a Tie!" : (outcome == 1 ? "Player 1 won!" : "Player 2 won!"));
-
 						if (debugging) {
 							System.out.println("Endboard: " + board);
 						}
@@ -367,7 +383,9 @@ public class BoardScene {
 			public void handle(ActionEvent event) {
 				isOnline = false;
 				vbox.getChildren().clear();
-				vbox.getChildren().addAll(textLabel1, textField1, textLabel2, textField2, cb, ai, submitButton);
+				vbox.getChildren().addAll(textLabel1, textField1, textLabel2, textField2, textLabel3, textField3, cb,
+						submitButton);
+				textLabel3.setText("Enter time for move in seconds (0 means infinite): ");
 			}
 		});
 
@@ -376,7 +394,8 @@ public class BoardScene {
 			public void handle(ActionEvent event) {
 				isServer = true;
 				vbox.getChildren().clear();
-				vbox.getChildren().addAll(textLabel1, textField1, textLabel2, textField2, textLabel3, textField3, cb, ai, submitButton);
+				vbox.getChildren().addAll(textLabel1, textField1, textLabel2, textField2, textLabel3, textField3, cb,
+						ai, submitButton);
 				vbox.setAlignment(Pos.CENTER);
 			}
 		});
@@ -451,11 +470,15 @@ public class BoardScene {
 						// clear out ui
 						vbox.getChildren().clear();
 
+						// set timer
+						timeForMove = Integer.parseInt(textField3.getText());
+
 						// create the board based on input
 						board = new Board(feedback1, feedback2, feedback3);
 						isAI = feedback4;
-						if(isAI) { //get difficulty
-							AIDepth = Integer.parseInt(textField3.getText());;
+						if (isAI) { // get difficulty
+							AIDepth = Integer.parseInt(textField3.getText());
+							;
 						}
 
 						// create server based off of feedback
@@ -495,6 +518,44 @@ public class BoardScene {
 		Scene boardScene = new Scene(vbox, 500, 500);
 
 		return boardScene;
+	}
+
+	// timer class
+	public static class timerUI {
+		int timeLeft;
+		Timeline time;
+
+		timerUI(int t, Label ui, int moveCount) {
+			if (t == 0) {
+				return;
+			} else {
+
+				// setup the timeline to fire event every 1 second
+				// event decrements the time on the Labels
+				ui.setText(timeLeft + "");
+				ui.setAlignment(Pos.CENTER);
+				timeLeft = t * 1000;
+				time = new Timeline(new KeyFrame(Duration.millis(1), e -> {
+					timeLeft--;
+
+					ui.setText("Time Left: " + ((double) timeLeft / (double) 1000));
+					
+					if (timeLeft <= 0) {
+						System.out.println(timeLeft);
+						time.pause();
+
+						// based on player, nuke the entire field and say who won
+						int curplr = board.curMove + 1;
+						int oplr = curplr == 1 ? 2 : 1;
+						vbox.getChildren().clear();
+						vbox.getChildren().add(new Label("Player " + oplr + " Won because of time!"));
+					}
+					//
+				}));
+				time.setCycleCount(Timeline.INDEFINITE);
+				time.play();
+			}
+		}
 	}
 
 }
