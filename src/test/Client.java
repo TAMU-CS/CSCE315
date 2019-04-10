@@ -8,6 +8,7 @@ public class Client extends Thread {
 	private static Socket clientSocket;
 	private static PrintWriter out;
 	private static BufferedReader in;
+	private static boolean debugging = true;
 
 	public static void startConnection(String ip, int port) throws IOException {
 		clientSocket = new Socket(ip, port);
@@ -19,6 +20,11 @@ public class Client extends Thread {
 		String inputLine;
 
 		while ((inputLine = in.readLine()) != null) {
+			//print out input Line if debugging is true
+			if(debugging) {
+				System.out.println(inputLine);
+			}
+			
 			// run a thread to process server response
 			String tokens[] = inputLine.split(" ");
 			Worker thread = new Worker(tokens);
@@ -67,24 +73,28 @@ public class Client extends Thread {
 
 		public void run() {
 			String opt = tokens[0];
-
-			switch (opt) {
-			case "1":
-				System.out.println("Message Command Received-" + opt);
-				break;
-			case "2":
-				System.out.println("Message Command Received-" + opt);
-				break;
-			case "3":
-				System.out.println("Message Command Received-" + opt);
-				break;
-			case "4":
-				System.out.println("Message Command Received-" + opt);
-				break;
-			default:
-				System.out.println("Error Message Command");
-				break;
-			}
+//
+//			switch (opt) {
+//			case "1":
+//				System.out.println("Message Command Received-" + opt);
+//				break;
+//			case "2":
+//				System.out.println("Message Command Received-" + opt);
+//				break;
+//			case "3":
+//				System.out.println("Message Command Received-" + opt);
+//				break;
+//			case "4":
+//				System.out.println("Message Command Received-" + opt);
+//				break;
+//			default:
+//				System.out.println("Error Message Command");
+//				break;
+//			}
+			
+			Scanner scanner = new Scanner(System.in);
+			String input = scanner.nextLine();
+			out.println(input);
 		}
 	}
 

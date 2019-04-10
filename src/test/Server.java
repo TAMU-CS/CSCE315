@@ -33,6 +33,12 @@ public class Server {
 	public void stop() throws IOException {
 		serverSocket.close();
 	}
+	
+	//send message and return response to chs
+	public String sendMsg(int index, String msg) throws IOException {
+		chs[index].out.println(msg);
+		return chs[index].in.readLine();
+	}
 
 	public static class ClientHandler extends Thread {
 		private Socket clientSocket;

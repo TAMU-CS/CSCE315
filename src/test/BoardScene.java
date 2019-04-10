@@ -39,27 +39,43 @@ public class BoardScene {
 	}
 
 	// start online game will initiate a server
-	static private void startOnlineGame() {
+	static private void startOnlineGame() throws IOException {
 		// check if server or client
 		if (isServer) {
+			Platform.runLater(new Runnable() {
+				public void run() {
+					// display the board and wait for inputs
+					initiateBoard(false, 0);
+					notifLabel.setText("Waiting On Clients To Join!");									
+				}
+			});
 
 			// set up server object
 			Server server = new Server();
 			int port = 6666;
 
-			try {
-				server.start(port);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			server.start(port);
 
-			Platform.runLater(new Runnable() {
-				public void run() {
-					// display the board and wait for inputs
-					initiateBoard(false, board.curMove);
-				}
-			});
+			// get user moves
+			while(!board.endgame()) {
+				
+				//TODO: check to get response from player OR AI			
+				String resp = server.sendMsg(board.curMove, board.toString());
+						
+				board.nextTurn(Integer.parseInt(resp));
+						
+				Platform.runLater(new Runnable() {
+					public void run() {
+						// display the board and wait for inputs
+						initiateBoard(false, 0);
+						
+						//get player move
+					}
+				});
+			}
+			
+			//display the winners
+			
 		}else { //client
 			
 		}
@@ -116,7 +132,6 @@ public class BoardScene {
 				houseButtons[i].setOnAction(E -> {
 					// check if index is legal move
 					if (!board.checkMove(index)) {
-						// TODO change the notif label
 						notifLabel.setText("Invalid House Choice! It is empty!");
 						return;
 					}
@@ -291,7 +306,11 @@ public class BoardScene {
 						Thread thread = new Thread() {
 							public void run() {
 								if (isOnline) { // connecting two clients
-									startOnlineGame();
+									try {
+										startOnlineGame();
+									} catch (IOException e) {
+										e.printStackTrace();
+									}
 								} else { // just play locally
 									startLocalGame();
 								}
