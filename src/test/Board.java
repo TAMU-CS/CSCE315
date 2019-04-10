@@ -296,7 +296,12 @@ public class Board {
 		for(int i = 0; i < p1Hole; i++) {
 			p1Total += board[i];
 			p2Total += board[board.length/2 + i];
+			
+			board[i] = 0;
+			board[board.length/2 + i] = 0;
 		}
+		board[board.length/2 - 1] = p1Total;
+		board[board.length - 1] = p2Total;
 		
 		return p1Total == p2Total ? 0 : (p1Total > p2Total ? 1 : 2);
 	}
@@ -349,6 +354,39 @@ public class Board {
 	 */
 	public int getHouses() {
 		return board.length/2 - 1;
+	}
+	
+	/*
+	 * getMoves
+	 * returns 1 for possible move, and 0 for no possible move
+	 */
+	public int[] getMoves(){
+		//get set of player holes
+		int range[] = new int[2];
+		int plrHole;
+		
+		if(curMove == 0) {
+			plrHole = board.length/2 - 1;
+			
+			range[0] = 0;
+			range[1] = plrHole - 1;
+		}else {
+			plrHole = board.length - 1;			
+			
+			range[0] = board.length/2;
+			range[1] = plrHole - 1;
+		}
+		
+		int moves[] = new int[range[1] - range[0] + 1];
+		for(int i = range[0]; i <= range[1]; i++) {
+			if(board[i] != 0) {
+				moves[i - range[0]] = 1;				
+			}else {
+				moves[i - range[0]] = 0;
+			}
+		}
+		
+		return moves;
 	}
 	
 	public int getAIMove() {
@@ -417,6 +455,11 @@ public class Board {
 //		
 //		Board b = new Board(tokens);
 //		System.out.println(b);
+		
+		//test get moves
+//		String resp = "0 [ board= 0 0 0 0 curMove= 0 endgame=false ]";
+//		Board board = new Board(resp.split(" "));
+//		System.out.println(board.getMoves().length);
 	}
 
 }

@@ -26,6 +26,7 @@ public class BoardScene {
 	static boolean isOnline; // is this 2player online/offline
 	static boolean isServer; // is this server, if not , then client
 	static boolean isAI; // should we take ai into account
+	static int AIDepth;
 	static boolean debugging = true; // displays stuff into cli
 	static Board board; // this is board state
 
@@ -69,8 +70,6 @@ public class BoardScene {
 				resp = server.sendMsg(notCurMove, notCurMove + " " + board.toString());	
 			}
 
-			// get user moves
-			System.out.println("is AI?" + isAI);
 			while (true) {
 				if (!isAI) {
 					if (board.curMove == 0) {
@@ -99,7 +98,7 @@ public class BoardScene {
 					});
 				} else {
 					if (board.curMove == 0) { //ai response
-						resp = board.getAIMove() + "";
+						resp = MiniMax.getMove(board.toString(), AIDepth, 0) + "";
 						server.sendMsg(1, board.toString());
 					} else { //human response
 						resp = server.sendMsg(1, board.toString());
@@ -338,6 +337,7 @@ public class BoardScene {
 
 		Label textLabel1 = new Label("Enter the number of houses 4-9");
 		Label textLabel2 = new Label("Enter the seeds 1-10");
+		Label textLabel3 = new Label("Enter the AI Difficulty 1-9");
 		CheckBox cb = new CheckBox("Random");
 		CheckBox ai = new CheckBox("AI");
 
@@ -346,6 +346,8 @@ public class BoardScene {
 		textField1.setMaxWidth(55);
 		TextField textField2 = new TextField();
 		textField2.setMaxWidth(55);
+		TextField textField3 = new TextField();
+		textField3.setMaxWidth(55);
 
 		Button submitButton = new Button("Submit");
 
@@ -374,7 +376,7 @@ public class BoardScene {
 			public void handle(ActionEvent event) {
 				isServer = true;
 				vbox.getChildren().clear();
-				vbox.getChildren().addAll(textLabel1, textField1, textLabel2, textField2, cb, ai, submitButton);
+				vbox.getChildren().addAll(textLabel1, textField1, textLabel2, textField2, textLabel3, textField3, cb, ai, submitButton);
 				vbox.setAlignment(Pos.CENTER);
 			}
 		});
@@ -410,7 +412,7 @@ public class BoardScene {
 				// 2- seeds
 				// 3- random
 				// 4- ai
-				Integer feedback1, feedback2 = 0;
+				Integer feedback1, feedback2, feedback5 = 0;
 				boolean feedback3 = cb.isSelected();
 				boolean feedback4 = ai.isSelected();
 				boolean validFeedback1, validFeedback2 = false;
@@ -452,6 +454,9 @@ public class BoardScene {
 						// create the board based on input
 						board = new Board(feedback1, feedback2, feedback3);
 						isAI = feedback4;
+						if(isAI) { //get difficulty
+							AIDepth = Integer.parseInt(textField3.getText());;
+						}
 
 						// create server based off of feedback
 						// run this in a new thread
@@ -487,7 +492,7 @@ public class BoardScene {
 		vbox = new VBox(20, titleLabel, onlineButton, offlineButton);
 		vbox.setAlignment(Pos.CENTER);
 
-		Scene boardScene = new Scene(vbox, 500, 300);
+		Scene boardScene = new Scene(vbox, 500, 500);
 
 		return boardScene;
 	}
