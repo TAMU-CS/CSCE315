@@ -41,6 +41,7 @@ public class Kalah extends Application {
 	public static void main(String[] args) {
 		// launch the Application
 		launch(args);
+			
 	}// end main
 
 }

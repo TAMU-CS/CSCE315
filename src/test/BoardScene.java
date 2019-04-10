@@ -221,7 +221,7 @@ public class BoardScene {
 						
 						//create the board based on input
 						Board board= new Board(feedback1, feedback2, feedback3);
-						System.out.println(board);
+						System.out.println(board);				
 						
 						//create server based off of feedback
 						//run this in a new thread
