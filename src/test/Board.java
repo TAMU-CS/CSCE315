@@ -118,6 +118,31 @@ public class Board {
 
 	}
 
+	
+	/*
+	 * checkMove
+	 * evaluates if a given move is legal according to the current board state
+	 */
+	public boolean checkMove(int index) {
+		//get set of player holes
+		int range[] = new int[2];
+		int plrHole;
+		
+		if(curMove == 0) {
+			plrHole = board.length/2 - 1;
+			
+			range[0] = 0;
+			range[1] = plrHole - 1;
+		}else {
+			plrHole = board.length - 1;			
+			
+			range[0] = board.length/2;
+			range[1] = plrHole - 1;
+		}
+		
+		return !(board[index + range[0]] == 0);
+	}
+	
 	/*
 	 * nextTurn evaluates the board on next turn based on input returns true if
 	 * player can move again, otherwise false
@@ -214,6 +239,53 @@ public class Board {
 		return true;
 	}
 
+	/*
+	 * getOutCome
+	 * returns 3 options: 
+	 * 0- it is a tie
+	 * 1- p1 is the winner
+	 * 2- p2 is the winner
+	 */
+	public int getOutcome() {
+		//tally up all the points to add to both sides
+		int p1Hole = board.length/2 - 1;		 
+		int p2Hole = board.length - 1;
+		int p1Total = 0;
+		int p2Total = 0;
+		
+		//increment to each hole to get the totals
+		for(int i = 0; i < p1Hole; i++) {
+			p1Total += board[i];
+			p2Total += board[board.length/2 + i];
+		}
+		
+		return p1Total == p2Total ? 0 : (p1Total > p2Total ? 1 : 2);
+	}
+	
+	/*
+	 * getSeeds
+	 * returns amount of seeds for an index based on player perspective
+	 */
+	public int getSeeds(int index, int persp) {
+		//get set of player holes
+		int range[] = new int[2];
+		int plrHole;
+		
+		if(persp == 0) {
+			plrHole = board.length/2 - 1;
+			
+			range[0] = 0;
+			range[1] = plrHole - 1;
+		}else {
+			plrHole = board.length - 1;			
+			
+			range[0] = board.length/2;
+			range[1] = plrHole - 1;
+		}
+		
+		return board[range[0] + index];
+	}
+	
 	/*
 	 * toString gives stringified value to represent the current board
 	 */

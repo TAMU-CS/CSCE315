@@ -19,49 +19,60 @@ public class BoardScene {
 
 	static int houses, seeds = 0; // input inquiries from user
 	static Button[] houseButtons; // button array for houses
-	static Label scorePlayer1, scorePlayer2, curPlayer;
+	static Label scorePlayer1, scorePlayer2, curPlayerLabel, notifLabel;
 	static VBox vbox;
 	static HBox topHBox;
 	static HBox bottomHBox;
-	static boolean isOnline; //is this 2player online/offline
-	static boolean isServer; //is this server, if not , then client
-	static boolean debugging = true; //displays stuff into cli
+	static boolean isOnline; // is this 2player online/offline
+	static boolean isServer; // is this server, if not , then client
+	static boolean debugging = true; // displays stuff into cli
+	static Board board; // this is board state
 
-	//start local game will just run the game locally
+	// start local game will just run the game locally
 	static private void startLocalGame() {
-		
+		Platform.runLater(new Runnable() {
+			public void run() {
+				// display the board and wait for inputs
+				initiateBoard(true, board.curMove);
+			}
+		});
 	}
-	
-	//start online game will initiate a server
+
+	// start online game will initiate a server
 	static private void startOnlineGame() {
-    	//set up server object
-    	Server server=new Server();
-    	int port = 6666;
-    	
-        try {
+		// set up server object
+		Server server = new Server();
+		int port = 6666;
+
+		try {
 			server.start(port);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
-	static public void initiateBoard(Board inboard) {
+
+	// initiates the ui for the board, sets up button events based on playerInput
+	static public void initiateBoard(boolean playerInput, int plrPerspective) {
 		vbox.getChildren().clear();
+
+		// player title label
+		curPlayerLabel = new Label(plrPerspective == 0 ? "Player 1 Move" : "Player 2 Move");
+		vbox.getChildren().add(curPlayerLabel);
 
 		HBox hbox1 = new HBox(15); // bottom row of buttons
 		HBox hbox2 = new HBox(15); // top row of buttons
 		hbox1.setAlignment(Pos.CENTER);
 		hbox2.setAlignment(Pos.CENTER);
 
-		scorePlayer1 = new Label("Score: ");
+		scorePlayer1 = new Label(plrPerspective == 0 ? "Score P1: " : "Score P2: ");
 		hbox1.getChildren().add(scorePlayer1);
 
 		houseButtons = new Button[houses * 2];
 
-		// Code for adding top buttons
+		// Code for adding top buttons (from other player perspective)
 		for (int i = houses; i < houses * 2; i++) {
-			houseButtons[i] = new Button("" + seeds);
+			houseButtons[i] = new Button("" + board.getSeeds(i - houses, plrPerspective == 1 ? 0 : 1));
 			hbox2.getChildren().add(houseButtons[i]);
 
 		}
@@ -69,33 +80,66 @@ public class BoardScene {
 
 		// Code for adding bottom buttons
 		for (int i = 0; i < houses; i++) {
-			houseButtons[i] = new Button("" + seeds);
+			houseButtons[i] = new Button("" + board.getSeeds(i, plrPerspective));
 			hbox1.getChildren().add(houseButtons[i]);
 
 			// set the event action
-			final int index = i;
-			houseButtons[i].setOnAction(E -> {
-				// call on click handle
-				//TODO
-			});
+
+			if (playerInput) {
+				final int index = i;
+				houseButtons[i].setOnAction(E -> {
+					// check if index is legal move
+					if (!board.checkMove(index)) {
+						// TODO change the notif label
+						notifLabel.setText("Invalid House Choice! It is empty!");
+						return;
+					}
+
+					// update the board
+					board.nextTurn(index);
+
+					// print board if debug is true
+					if (debugging) {
+						System.out.println(board);
+					}
+
+					// check for endgame
+					if (!board.endgame()) {
+						initiateBoard(true, board.curMove);
+					} else { // display winner
+						int outcome = board.getOutcome();
+						notifLabel.setText(
+								outcome == 0 ? "It's a Tie!" : (outcome == 1 ? "Player 1 won!" : "Player 2 won!"));
+
+						if (debugging) {
+							System.out.println("EndGame!");
+							System.out.println(board);
+						}
+					}
+				});
+			}
 
 		}
+		scorePlayer2 = new Label(plrPerspective == 0 ? "Score P2: " : "Score P1: ");
+		hbox1.getChildren().add(scorePlayer2);
+
 		vbox.getChildren().add(hbox1);
 
-		scorePlayer2 = new Label("Score: ");
-		hbox1.getChildren().add(scorePlayer2);
-		
-	}
-	
-	static public void updateBoard(Board inBoard) {
-		Platform.runLater(new Runnable() {
-			public void run() {
-				initiateBoard(inBoard);
-			}
-		});
+		// setup notification label
+		notifLabel = new Label("");
+		vbox.getChildren().add(notifLabel);
 
 	}
-	
+
+	// Updates the UI for the board based on player view
+	static public void updateBoard(Board inBoard, int plrView) {
+		Platform.runLater(new Runnable() {
+			public void run() {
+
+			}
+		});
+	}
+
 	public static Scene create(Stage stage) {
 		stage.setTitle("Kalah");
 
@@ -127,8 +171,8 @@ public class BoardScene {
 
 		Button submitButton = new Button("Submit");
 
-		//online/offline, server/client buttons just change one state variable
-		//and then move to next part of ui state
+		// online/offline, server/client buttons just change one state variable
+		// and then move to next part of ui state
 		onlineButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -171,17 +215,17 @@ public class BoardScene {
 		submitButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				//feedback list:
-				//1- houses
-				//2- seeds
-				//3- random
-				//4- ai
-				Integer feedback1, feedback2 = 0; 
+				// feedback list:
+				// 1- houses
+				// 2- seeds
+				// 3- random
+				// 4- ai
+				Integer feedback1, feedback2 = 0;
 				boolean feedback3 = cb.isSelected();
 				boolean feedback4 = ai.isSelected();
 				boolean validFeedback1, validFeedback2 = false;
 
-				//get process feedback
+				// get process feedback
 				if (textField1.getText() != null && !textField1.getText().isEmpty() && textField2.getText() != null
 						&& !textField2.getText().isEmpty()) {
 					feedback1 = Integer.valueOf(textField1.getText()); // houses
@@ -207,31 +251,26 @@ public class BoardScene {
 
 					// Readjust the window with the board
 					if (validFeedback1 && validFeedback2) {
-						if(debugging) { //display to cli, feedback
-							System.out.println("Input: " + 
-								feedback1 + " " +
-								feedback2 + " " +
-								feedback3 + " " +
-								feedback4 + " "
-							);
+						if (debugging) { // display to cli, feedback
+							System.out.println(
+									"Input: " + feedback1 + " " + feedback2 + " " + feedback3 + " " + feedback4 + " ");
 						}
-						
-						//clear out ui
+
+						// clear out ui
 						vbox.getChildren().clear();
-						
-						//create the board based on input
-						Board board= new Board(feedback1, feedback2, feedback3);
-						System.out.println(board);				
-						
-						//create server based off of feedback
-						//run this in a new thread
+
+						// create the board based on input
+						board = new Board(feedback1, feedback2, feedback3);
+
+						// create server based off of feedback
+						// run this in a new thread
 						Thread thread = new Thread() {
-							public void run(){
-								if(isOnline){ //connecting two clients
+							public void run() {
+								if (isOnline) { // connecting two clients
 									startOnlineGame();
-								}else { //just play locally
+								} else { // just play locally
 									startLocalGame();
-								}								
+								}
 							}
 						};
 						thread.start();
